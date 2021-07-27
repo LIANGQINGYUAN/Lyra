@@ -1,0 +1,29 @@
+{
+    "strategy":"uncased",
+    "data_dir": "data",
+    "data_file_suffix": "lyra.csv",
+    "vocab_path": "./data/vocab.lyra.json",
+    "model_root": "models/",
+
+    "d_model": 128,
+    "d_inner":512,
+
+    "n_head":4,
+    "n_layers":3,
+    "batch_size": 50,
+    "max_enc_len":150,
+    "max_dec_len": 200,
+    "beam_size": 4,
+    "n_warmup_steps":500,
+
+    "lr":1e-4,
+    "eps": 1e-12,
+    "epoch":800,
+    "smoothing_factor":0.1,
+    "dropout":0.1,
+    "encoder_language":"encoder-en",
+    "save_mode":"best",
+    "bpe_mode":false,
+    "pointer_gen": false,
+    "device": "cuda:7"
+}
