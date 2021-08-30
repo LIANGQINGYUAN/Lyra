@@ -1,6 +1,8 @@
 # Lyra
 Lyra: A Benchmark for Turducken-Style Code Generation
 
+Paper link: http://arxiv.org/abs/2108.12144
+
 # Dataset
 
 The data used in our paper is under `Lyra/data` folder.
