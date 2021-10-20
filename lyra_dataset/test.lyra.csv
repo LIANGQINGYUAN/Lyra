@@ -1,0 +1,1154 @@
+id,code,comm_zh,comm_en
+13152,"from flask import jsonify
+def book_api(conn,isbn):
+	res = conn.execute(""SELECT user FROM books WHERE isbn = :isbn"", {""isbn"": isbn}).fetchone()
+	if res is None:
+		return jsonify({""error"": ""The book is not in the database""})
+	else:
+		return res","使用$conn$执行SQL(根据$isbn$获取books表中的user列)并获取第一条数据，如果查询结果为None，则返回jsonify处理的{""error"": ""The book is not in the database""}，否则返回查询结果","Execute The SQL (get The user column in The books where isbn is $isbn$) with $conn$ and get the first data. If the query result is None, return ""error"": ""The book is not in the database"" possessed by jsonify, otherwise return the query result."
+13102,"from sqlalchemy import create_engine
+from flask import jsonify
+def getyears(postgres):
+	engine = create_engine(postgres)
+	data = engine.execute(""select date_part from stock_data"").fetchall()
+	newdata = []
+	for x in data:
+		d = {'year': x[0]}
+		newdata.append(d)
+	return jsonify(newdata)",利用$postgres$获取数据库引擎并执行SQL（获取stock_data表中的date_part列）并获取所有数据，使用for循环对查询结果中的每一项的第0个元素和'year'一起存储为list类型，最后返回jsonify处理的list内容,"Use $postgres$ to get the database engine and execute the SQL (get the date_part in the stock_data) and get all the data, and use the for loop to store the list type with the 'year' for the tenth element of each item in the query result, finally, return the list content that jsonify handles."
+11365,"def show_tables(conn,information_schema):
+	query = conn.execute(""SELECT * FROM log where information_schema=:information_schema"", {""information_schema"": information_schema})
+	return query.fetchall()",使用$conn$执行SQL（根据$information_schema$查询log表中的全部信息），并将所有查询结果返回。,Use $conn$ to execute SQL (query all the information in the log table based on $information_schema$) and return all query results.
+13091,"def dialog_showdb(conn):
+	texts = conn.execute(""SELECT * FROM dialog"").fetchall()
+	return texts",使用$conn$执行SQL（查询dialog表中的所有列）并获取所有数据。返回查询结果。,Use $conn$ to execute SQL (query all columns in the dialog table) and get all the data. Return the query results.
+11633,"import json
+def example(engine,id,date):
+	connection = engine.connect()
+	sql = ""select accident_name from accident_table where accident_id=:id and accident_date=:date""
+	res = connection.execute(sql,{""id"":id,""date"":date}).fetchall()
+	return json.dumps([dict(r) for r in res])",使用$engine$连接数据库，执行SQL（获取accident_table表中accident_id为$id$和accident_date为$date$的accident_name列）并获取所有数据，使用for循环对查询结果的每一项转化为字典类型并通过dumps的方法返回,"Use $engine$ to connect to the database, execute SQL (get the accident_name column in the accident_table whose accident_id is $id$ and accident_date is $date$) and get all the data. Use for loop to convert each item of the query result to a dictionary type and return it through the dumps method."
+11149,"def mysql_trace(conn,score):
+	try:
+		kong = conn.execute(""SELECT * FROM ratings WHERE score=:score"",{""score"":score}).fetchall()
+		for item in kong:
+			print (item)
+	except Exception:
+		return False",尝试性使用$conn$查询ratings表中score为$score$的所有列，并获取所有数据，使用for循环遍历查询结果并打印。如果出现Exception异常，则返回False。,"Try to use all the columns in the $conn$ ratings where the score is $score$, get all the data, and use a for loop to traverse the query results and print them. If an Exception occurs, return False."
+11231,"def cancel(db, Ref_Code):
+	with db.connect() as conn:
+		sql_query = ""SELECT Creator_Email FROM event_details WHERE Ref_Code =:Ref_Code""
+		creator_email = conn.execute(sql_query,{""Ref_Code"":Ref_Code}).fetchall()
+		return creator_email",使用with语句通过$db$获取连接，执行SQL（根据$Ref_Code$获取event_details中的Creator_Email）并获取所有数据，最后返回获取的结果,"Use the with statement to get the connection via $db$, execute the SQL (get the Creator_Email in event_details based on $Ref_Code$), get all the data, and finally return the obtained result."
+13810,"def get_value(db,User,name):
+	user = db.query(User).filter_by(User.name == name).first()
+	assert len(user) > 0
+	return user",通过$db$使用ORM方式查询$User$表中name为$name$的第一条数据，设置断言判断返回结果的长度大于0，并返回查询结果。,Use ORM method to query the first piece of data in the $User$ table with name as $name$ through $db$.  Set the assertion to determine the length of the returned results is greater than 0 and return the query results.
+13271,"from flask import render_template
+def select_register(conn, username):
+	register_sql = ""SELECT * FROM users WHERE username =: username""
+	users = conn.execute(register_sql,{""username"":username}).fetchall()
+	return render_template('register.html', users =users)",使用$conn$执行SQL（根据$username$获取users中的所有列）并获取所有数据。返回渲染后的'register.html'其中users参数为执行SQL语句的查询结果。,"Execute SQL (get all columns in users where the name of user $username$) with $conn$ and get all the data. Then return rendered 'register.html', where the users parameter is the result of the query executing the SQL statement."
+11389,"def get_pokemon_spawned_at(conn, lat, lon):
+	query = conn.execute(""SELECT * FROM sightings where lat=:lat and lon=:lon"",{""lat"": lat,""lon"":lon}).fetchall()
+	pokemons = [dict(r) for r in query.fetchall()]
+	return pokemons","使用$conn$执行SQL（根据$lat$和$lon$查询sightings表中所有列），并获取所有查询结果，使用for循环将查询结果的每一条转化为dict,并以list存储，返回这个list","Use $conn$ to execute SQL (query all columns in the sightings table based on $lat$ and $lon$) and get all the query results. Use for loop to convert each of the query results into dict, and store them in list, and return this list."
+13798,"from flask import request
+def edit_article(connection,title,body):
+	if request.method == 'POST':
+		cur = connection.cursor()
+		sql = ""SELECT id FROM articles WHERE title = :title and body = :body""
+		render = cur.execute(sql, {""title"": title,""body"":body}).fetchall()
+		cur.close()
+		return render","如果请求方式为""POST""，利用$connection$获取游标，设置sql（根据$title$和$body$查询articles表中id列）,执行SQL并获取所有查询结果，关闭连接，返回查询结果。","If the request method is ""POST"", use $connection$ to get a cursor, set sql (query the id column in the articles table based on $title$ and $body$), execute SQL, get all the query results, close the connection, and return the query results."
+13916,"from flask import jsonify
+def get_user_tn(db_connect, user_tn):
+	try:
+		conn = db_connect.connect()
+		query = conn.execute(""select * from ticket where tn = :user_tn"",{""user_tn"": user_tn})
+		result = [dict(i) for i in query]
+		return jsonify(result)
+	except:
+		return jsonify({'error':""fail""})","尝试使用$db_connect$连接数据库，执行SQL语句：查询ticket表中tn为$user_tn$的所有列，将查询结果每一项转化为dict存储为list，并使用jsonify将查询结果返回。如果出现异常，使用jsonify返回'error'（其中'error'内容为""fail""）。","Try to connect the database with $db_connect$, execute the SQL statement: Query all the columns in the ticket table where tn is $user_tn$, convert each item of the query result to dict, store it as list, and use jsonify to return the query result. If an exception occurs, use jsonify to return 'error' (where the 'error' content is 'fail')."
+13329,"def query_page(db,user_id):
+	connection = db.connect()
+	result = connection.execute(""SELECT count(*) FROM query_users WHERE user_id=:user_id"",{""user_id"":user_id})
+	assert len(result.fetchall()) != 0
+	connection.close()",使用$db$连接数据库，执行SQL（根据$user_id$查询query_users表中所有列的数量），设置断言判断获取的所有数据长度是否为0，关闭连接.,"Use $db$ to connect the database, execute SQL (query the number of all columns in the query_users table based on $user_id$), set theassertion to determine whether the length of all the data obtained is 0, and close the connection."
+14095,"def get_most_rated_movies(engine,rating):
+	with engine.connect() as conn:
+		query = 'select * from movies_mean_count where rating_count >:rating'
+		results = conn.execute(query,{""rating"":rating}).fetchall()
+		movie_ids = []
+		for result in results:
+			movie_ids.append(result)
+		return movie_ids",通过with语句根据$engine$连接数据库。设置SQL语句，内容是：查询movies_mean_count表中rating_count大于$rating$的所有列，执行SQL获取所有数据。使用for循环将查询结果中的每一项元素都存储到list中并将list内容返回。,"Connect to the database according to $engine$ through the with statement. Set the SQL statement and the content is as follows: Query all columns in the movies_mean_count table whose rating_count is greater than $rating$, and execute SQL to get all the data. Use for loop to store each element in the query result into list and return the list content."
+13740,"def test_main_pooling(conn,client):
+	v = conn.execute(""SELECT * FROM pooling where client = :client"", {""client"": client}).fecthall()
+	assert len(v)>0",使用$conn$执行SQL（根据$client$查询pooling表中所有列），并获取所有查询结果，设置断言判断查询结果长度是否大于0。,"Use $conn$ to execute SQL (query all columns in the pooling table based on $client$), get all the query results, and set assertions to determine whether the length of the query results is greater than 0."
+11044,"from sqlalchemy.sql import select
+def login(conn,users,username,UnauthorizedError):
+	s = select([users]).where(users.c.username == username)
+	recs_data = conn.execute(s).fetchall()
+	if recs_data is None:
+		raise UnauthorizedError
+	else:
+		return recs_data",用python表达式设置SQL（根据$username$查询$users$表中的所有信息）。使用$conn$执行SQL并获取所有查询结果。如果查询的结果都为None，则抛出$UnauthorizedError$异常。否则返回查询结果。,"Set SQL with the python expression (query all the information in the $users$ table based on $username$). Use $conn$ to execute SQL and get all query results. If all the results of the query are None, a $UnauthorizedError$ exception is formed. Otherwise, return the query result."
+13711,"from sqlalchemy.sql import select
+def modify(eng,tab,code_no):
+	conn = eng.connect()
+	sql = select(tab).where(tab.c.code_no == code_no)
+	r = conn.execute(sql).fetchall()
+	return r",使用$eng$获取连接，使用python表达式方式设置SQL：根据$code_no$查询$tab$表中的所有信息。使用数据库连接执行SQL并获取所有数据，最后返回查询结果。,"Use $eng$ to get the connection, and use the python expression to set up SQL: Query all the information in the $tab$ table based on $code_no$. Use the database connection to execute the SQL, get all the data, and finally return the query results."
+13795,"from flask import jsonify
+def api(conn,average_score,review_count):
+	sql = ""SELECT rating FROM review WHERE average_score = :average_score and review_count = :review_count""
+	api_book = conn.execute(sql, {""average_score"": average_score,""review_count"":review_count}).fetchall()
+	if not api_book:
+		return jsonify({""Error"": ""No book""})
+	return jsonify({""title"": api_book.title,""author"": api_book.author,""year"": api_book.pub_year})","设置SQL（根据$average_score$和$review_count$查询review表中rating列），根据$conn$执行SQL并获取所有查询结果，如果未查询到结果，返回转化为json格式的字典，""Error""键的值设置为""No book""。否则返回转化为json格式的字典，其中""title""键的值设置为查询结果的title字段,""author""键的值设置为查询结果的author字段,""year""键的值设置为查询结果的pub_year字段。","Set SQL (query the rating column in the review table based on $average_score$ and $review_count$), execute SQL based on $conn$ and get all the query results. If no results is queried, return the dictionary converted to json format, where the value of the ""Error"" key is set to ""No book""; otherwise, return the dictionary converted to json format, where the value of the ""title"" key is set to the title field of the query result, the value of the ""author"" key is set to the author field of the query result, and the value of the ""year"" key is set to the pub_year field of the query result."
+13050,"from flask import render_template
+def create(conn):
+	data = conn.execute(""SELECT * FROM class_schedule"").fetchall()
+	return render_template('create.html', data = data)",使用$conn$执行SQL（查询class_schedule表中的所有列）并获取所有数据。返回渲染后的'create.html'并将查询结果传给data参数。,Use $conn$ to execute SQL (query all columns in the class_schedule table) and get all the data. Return the rendered 'create.html' and pass the query results to the data parameter.
+14028,"def index(conn, Event, time_now):
+	matching_events = conn.query(Event).filter(Event.end_date > time_now).fetchone()
+	return dict(matching_events)",通过$conn$连接，使用ORM方式执行SQL语句：查询$Event$表中end_date大于$time_now$的第一条数据，返回转化为dict类型的查询结果。,"Through the $conn$ to connect, and use ORM to execute the SQL statement: Query the first piece of data in the $Event$ table where end_date is greater than $time_now$, and return the query results that converted to dict."
+13241,"def search(e):
+	conn = e.connect()
+	query = conn.execute(""SELECT date FROM RInd"")
+	rs = [dict(zip(tuple(query.keys()), record)) for record in query.cursor]
+	return rs",使用$e$连接到数据库引擎，使用$conn$执行SQL（查询RInd表中所有date列）。最后将执行结果的keys作为字典中的key，执行结果中每一项的游标作为相应的value。将字典中每一项存入list并返回。,"Connect to the database engine using $e$, and execute SQL (query all date columns in the RInd) using $conn$. Finally, the keys of the result are executed as the key in the dictionary, and the cursors of each item in the result are executed as the corresponding values. Put each item in the dictionary into a list and return it."
+13420,"def get_consumables(conn, id):
+	sql_consumable = ""SELECT name FROM Consumables WHERE id =: id""
+	rs = conn.execute(sql_consumable,{""id"":id}).fetchall()
+	return [dict(row) for row in rs]",使用$conn$执行SQL（根据$id$获取Consumables表中的name列）并获取所有数据，然后再使用for循环对查询结果的每一项转化为字典类型并返回字典内容,Use $conn$ to execute the SQL (get the name column in the Consumables table based on $id$) and get all the data. Then use for loop to convert each item of the query result into dictionary type and return the contents of dictionary.
+13064,"def select_cluster(engine,yt_id):
+	with engine.connect() as con:
+		audio_id = con.execute(""SELECT * FROM audio_features WHERE youtube_id=:yt_id"", {""yt_id"": yt_id}).fetchone()
+		return audio_id",在with语句中使用$engine$获取数据库连接。使用连接执行SQL（查询当youtube_id为$yt_id$时，audio_features中的所有列）并获取第一条数据。返回查询结果。,Use $engine$ in the with statement to get the database connection. Use the connection to execute SQL (query all columns in audio_features when youtube_id is $yt_id$) and get the first piece of data. Return the query results.
+11287,"def select(engine, filter):
+	query=""SELECT * FROM table WHERE filter=:filter""
+	with engine.connect() as connection:
+		result = connection.execute(query,{""filter"":filter}).fetchall()
+		return result",设置SQL（根据$filter$获取table表中的所有列），通过with语句使用$engine$连接数据库并执行SQL语句获取所有数据，最后返回查询结果,"Set SQL (get all the columns in the 'table' table based on $filter$), connect to the database using $engine$ through the with statement, execute the SQL statement to get all the data, and finally return the query result."
+13385,"from flask import render_template
+def flights(conn,fli_id):
+	flights=conn.execute(""SELECT * FROM flights WHERE fli_id=:fli_id"",{""fli_id"":fli_id}).fetchall()
+	return render_template(""flights.html"", flights=flights)","使用$conn$执行SQL（根据$fli_id$查询flights表中的所有列），并获取所有查询结果，返回渲染后的""flights.html""页面，设置flights参数为查询结果。","Use $conn$ to execute SQL (query all columns in the flights table based on $fli_id$), get all the query results, return the rendered ""flights.html"" page, and set the flights parameter to the query result."
+13816,"def query_data(session, id):
+	res = session.execute(""SELECT clock FROM horse WHERE id =: id"", {""id"": id}).fetchone()
+	session.close()
+	return res",通过$session$查询horse表中id为$id$的第一条clock，确保$session$关闭，返回查询结果。,Query the first piece of clock with id as $id$ in the horse table through $session$. Make sure $session$ is closed and return the query results.
+11550,"from sqlalchemy.sql import select
+def get_target_byid(conn,targets,id):
+	s = select(targets.c.name).where(targets.c.id == id)
+	return conn.execute(s).fetchall()",使用$conn$连接，使用Python表达式的方式设置SQL语句为根据$id$获取$targets$中的所有name，执行SQL并返回获取的数据。,"Trough $conn$ to connect, use the Python expression to set the SQL statement to get all the name in $targets$ based on $id$ , execute the SQL and return the fetched data."
+13406,"def application(conn, id):
+	query = ""SELECT synopsis FROM books WHERE id =: id""
+	output = conn.execute(query,{""id"":id})
+	output = list(output)[0][0]
+	return output",使用$conn$执行SQL（根据$id$获取books表中的synopsis列），然后将查询结果的第0项的第0个元素转化为list，最后返回list内容,"Use $conn$ to execute the SQL (get the synopsis column in the books table based on $id$), then convert the 0th element of the 0th item of the query result into list, and finally return the list contents"
+13437,"from sqlalchemy.sql import select
+from sqlalchemy import create_engine
+def get_source(MYSQL_DB_URL, uid, table):
+	try:
+		db = create_engine(MYSQL_DB_URL)
+		con = db.connect()
+		sql = select([table]).where(table.c.id == uid)
+		res = con.execute(sql).fetchall()
+		con.close()
+		return res
+	except Exception as e:
+		print(e)",尝试使用$MYSQL_DB_URL$获取数据库引擎并连接数据库，然后根据python表达式的方式执行SQL（根据id为$uid$获取$table$表中的所有列）并获取所有数据，再关闭连接并返回查询结果，如果执行时出现异常，则打印异常,"Try to use $MYSQL_DB_URL$ to get the database engine and connect to the database, then execute the SQL based on the Python expression (get all columns in the $table$ table with the id as $uid$) and get all the data. Then close the connection and return the query results. If exception occurs during execution, print the exception."
+11266,"from sqlalchemy import create_engine
+def querySale(db_string, id_fornecedor):
+	db = create_engine(db_string)
+	try:
+		db.execute(""select * from project where id_fornecedor=:id_fornecedor"",{""id_fornecedor"":id_fornecedor}).fetchall()
+		res = True
+	except:
+		print(""Problem occur!"")
+		res = False
+	return res","通过$db_string$获取数据库引擎，尝试执行SQL语句（根据$id_fornecedor$获取project中的所有列）并获取所有数据，结果赋予真，否则则打印""Problem occur!""并且结果赋予假，最后返回结果的真假","Get database engine by $db_string$, try to execute SQL statement (get all columns in project based on $id_fornecedor$) and get all the data. The result will be given true, otherwise print ""Problem occur!"" and the result will be given false. Finally return the result true or false."
+11699,"from flask import request
+def checklogin(db,users,fname,pwd):
+	if request.method == 'POST':
+		res = db.execute(users.select([users.username]).where(users.first_name==fname and users.password==pwd)).fetchone()
+		return res",如果请求的方法为'POST'，则利用$db$根据python表达式的方式执行SQL（获取$users$表中的first_name为$fname$和password为$pwd$的username列）并获取第一条数据，再返回查询结果,"If the request method is 'POST', use $db$ to execute SQL according to the python expression (get the username column in the $users$ table whose first_name is $fname$ and password is $pwd$), get the first piece of data, and then return the query result."
+11589,"def get_hall_name_from_manager_id(conn, orderid):
+	try:
+		row = conn.execute(""SELECT * FROM manager WHERE orderid = :orderid"", {""orderid"": orderid}).fetchall()
+		k=[]
+		for r in row:
+			k.append(r[0])
+		return k
+	except:
+		print('query fail')",尝试性使用$conn$查询manager表中orderid为$orderid$的所有列，并获取所有数据，使用for循环将查询结果中的每一项的第0个元素存储到list中并将list内容返回。如果出现异常则打印'query fail'。,"Try to use $conn$ to query all the columns in the manager table where orderid is $orderid$, get all the data, use for loop to store the 0th element of each item in the query result into list and return the list content. Print 'query fail' if there is an exception."
+11472,"def get_best_model(dbconn, accuracy_score):
+		query_sql = ""SELECT trained_model FROM models WHERE accuracy_score =: accuracy_score""
+		results = dbconn.execute(query_sql,{""accuracy_score"":accuracy_score}).fetchone()
+		return results[0]","设置sql（根据$accuracy_score$查询models表中trained_model列）,使用$dbconn$执行SQL并获取第一条数据，返回查询结果的第0个元素。","Set up SQL (query the trained_model column in the models table based on $accuracy_score$). Use $dbconn$ to execute the SQL, get the first piece of data, and return the 0th element of the query result."
+13672,"from flask import render_template,redirect,url_for
+def get_book(db,isbn):
+	try:
+		book = db.execute(""SELECT title FROM books WHERE isbn=:isbn"", {""isbn"": isbn}).fetchone()
+		return render_template(""book.html"", book=book)
+	except:
+		return redirect(url_for('error'))
+	finally:
+		db.close()","尝试性使用$db$执行SQL（根据$isbn$查询books表中的title信息）并获取第一条数据，返回渲染后的""book.html""并将查询结果传给book参数。如果出现异常则redirect和url_for重定向到'error'。最终确保$db$关闭。","Try using $db$ to execute the SQL (query the title information in the books table where isbn is $isbn$) and get the first data, return the rendered ""book.html"" and pass the query result to the book parameter. Redirect and url_for redirect to 'error' if an exception occurs. Finally make sure $db$ is closed."
+13005,"def current_session(conn,created_at):
+	user_id = conn.execute(""SELECT id FROM current_user WHERE created_at=:created_at"",{""created_at"":created_at}).fetchone()
+	assert user_id != []
+	return user_id",使用$conn$执行SQL（根据$created_at$查询current_user表中的id）并获取第一条数据。设置断言判断查询结果不为空list。返回查询结果。,Use $conn$ to execute SQL (query the id in the current_user table based on $created_at$) and get the first piece of data. Set the assertion to determine that the query result is not empty list. Return the query results.
+11643,"from sqlalchemy import create_engine
+def search_datas(db_uri,id):
+	engine = create_engine(db_uri)
+	datas = engine.execute(""SELECT data FROM example WHERE id=:id"",{""id"":id}).fetchall()
+	return datas",使用$db_uri$获取数据库引擎并执行SQL（根据$id$获取example表中的data列）并获取所有数据，最后返回查询结果,"Use $db_uri$ to get the database engine and execute SQL (get the data column in the example table according to $id$), get all the data, and finally return the query result."
+13107,"def satz_positiv_bewerten(engine,uid,pro):
+	try:
+		rs=engine.execute(""select * from db_satz where uid =: uid and pro =:pro"",{""uid"":uid,""pro"":pro}).fetchall()
+		return rs
+	except:
+		return None",尝试使用$engine$执行SQL（根据$uid$和$pro$获取db_satz表中的全部信息）并获取所有数据，返回查询结果，否则返回None,"Try to use $engine$ to execute the SQL (get all the information in db_satz where uid is $uid$ and pro is $pro$) and get all the data, return the query result, otherwise return None."
+13754,"from sqlalchemy.sql import select
+def testBulkUpdate(engine,test_users,lastname):
+	conn = engine.connect()
+	session = select(test_users).where(test_users.c.lastname == lastname)
+	results = conn.execute(session).fetchall()
+	return results",通过$engine$连接数据库，根据python表达式设置SQL：（根据$lastname$查询$test_users$表中所有列）。执行SQL并获取所有数据，返回查询结果。,"Connect the database through $engine$ and set the SQL based on the python expression (query all the columns in the $test_users$ table based on $lastname$). Execute SQL, get all the data and return the query results."
+13702,"from sqlalchemy import create_engine
+from sqlalchemy.orm.session import sessionmaker
+def user_ip(morphweb_db,email):
+	engine = create_engine(morphweb_db)
+	DB_Session = sessionmaker(bind = engine)
+	session = DB_Session()
+	ret = session.execute(""select ip from usertable where email = :email "", {'email': email}).fetchone()
+	for t in ret:
+		return t[0]",根据$morphweb_db$创建数据库引擎，并以此来创建session实例化对象。使用实例执行SQL（根据$email$查询usertable中的ip列）并获取第一条数据。对于查询结果中的每一项，打印其中的第0号元素。,"Create a database engine based on $morphweb_db$ and use it to create session instantiated objects. Use instantiated objects to execute SQL (query the ip in the usertable based on $email$), get the first piece of data, and print the 0th element of each item of the query result."
+13021,"from flask import render_template
+def queryeuser(conn,name):
+	unique = conn.execute(""SELECT * FROM users WHERE username =:name"",{""name"":name}).fetchall()
+	if unique != []: 
+		return render_template('error.html')
+	return render_template(""success.html"", unique= unique)","使用$conn$执行SQL（查询当 username等于$name$时users表中的所有列）并获取所有数据。如果查询结果不为空list，则返回渲染后的'error.html'。否则返回渲染后的""success.html""，并将查询结果传递给unique参数。","Use $conn$ to execute SQL (query all columns in the users table when username equals $name$) and get all the data. If the query result is not empty list, return the rendered 'error.html'. Otherwise, return the rendered ""success.html"" and pass the query result to the unique parameter."
+13786,"def test_raise(connection,user_id,user_name):
+	try:
+		result = connection.execute(""select * from query_users where user_id = :user_id and user_name = :user_name"",{""user_id"":user_id,""user_name"":user_name})
+	except Exception as e:
+		print(e)
+	assert len(result.fetchall()) == 0
+	connection.close()",尝试使用$connection$执行SQL（根据$user_id$和$user_name$查询query_users表中全部信息），如果捕获到Exception异常，打印这个异常。设置断言判断获取到的所有数据长度是否为0，关闭连接。,"Try to use $connection$ to execute SQL (query all the information in the query_users table based on $user_id$ and $user_name$), and print the Exception if it is caught. Set the assertion to determine whether the length of all the obtained data is 0, and close the connection."
+11145,"from sqlalchemy.sql import select
+def query_old_recs(conn,z_test,id):
+	s = select(z_test.c.data).where(z_test.c.id == id)
+	recs = conn.execute(s).first()
+	return recs",使用Python表达式的方式设置SQL（通过$id$查询$z_test$中的data列），使用$conn$执行SQL获取第一条查询结果并将其返回。,Set up the SQL using a Python expression (query the data column in $z_test$ where id is $id$) and execute the SQL using $conn$ to get the first query result and return it.
+14203,"def check_user_book_authorized(conn, user_id, book_id):
+	result = conn.execute(""SELECT id FROM books WHERE user_id = :user_id AND book_id = :book_id"",{""user_id"":user_id,""book_id"":book_id}).fetchall()
+	return result",通过$conn$执行SQL语句：根据$user_id$和$book_id$查询books表中所有id数据，返回查询结果。,Execute the SQL statement via $conn$: Query all the id data in the books table based on $user_id$ and $book_id$ and return the query results.
+13426,"def sql_stm(conn, group_id):
+	stm = ""SELECT name FROM user WHERE group_id =: group_id""
+	result_proxy = conn.execute(stm,{""group_id"":group_id})
+	rows = result_proxy.fetchall()
+	for row in rows:
+		print(row)",根据$conn$执行SQL（根据$group_id$获取user表中的name列）并获取所有数据，然后使用for循环打印查询结果的每一项,Execute the SQL based on $conn$ (get the name column in the user table based on $group_id$) and get all the data. Use for loop to print each item of the query results.
+11529,"from sqlalchemy.sql import select
+def get_info(testing,users,name):
+	conn = testing.connect()
+	s = select(users.c.id).where(users.c.name == name)
+	information = conn.execute(s).fetchall()
+	conn.close()
+	return [dict(row) for row in information]","通过$testing$连接数据库。使用Python表达式的方式设置SQL语句（根据$name$获取$users$表中的所有id）,执行SQL语句，确保数据库连接关闭，将查询结果每一项转化为dict存储为list并返回。","Connect to the database through $testing$. Set up the SQL statement using the Python expression (get all id in $users$ table based on $name$), execute the SQL statement, make sure the database connection is closed. Convert each item of the query result into dict and store it as list and return it."
+13126,"def get_portfolio(conn,portfolio, date):
+	qry = ""select * from report where portfolio =:portfolio and date =:date""
+	df = conn.execute(qry,{""portfolio"":portfolio,""date"":date}).fetchall()
+	return df",使用$conn$执行SQL（根据$portfolio$和$date$获取report表中的所有列）并获取所有数据，最后返回查询结果,"Execute the SQL (get all the columns in the report where portfolio is $portfolio$ and date is $date$) with $conn$, get all the data, and return the results of the query."
+13890,"from flask import render_template
+def index(conn, id):
+	res = conn.execute(""SELECT * FROM flights WHERE id = :id"", {""id"": id}).fetchall()
+	if res:
+		return render_template(""indexair.html"", flights=res)","使用$conn$连接执行SQL语句：根据$id$获取flights表中的全部列，并获取全部数据，如果查询结果存在，渲染并返回""indexair.html"", 其中flights参数为查询结果。","Use the $conn$ connection to execute the SQL statement: Get all the columns in the flights table based on $id$ and get all the data. If the query result exists, render and return ""indexair.html"", where the flights parameter is the query result."
+13376,"from sqlalchemy.sql import select
+def query(conn,table,name):
+	s = select(table.c.stringify).where(table.c.name == name)
+	return conn.execute(s).fetchall()",根据python表达式设置SQL：（根据$name$查询$table$表中stringify列）。返回通过$conn$执行SQL并获取的所有数据,Set SQL based on the python expression (query the stringify column in the $table$ table based on $name$). Return all the data obtained by executing SQL through $conn$.
+13737,"def main(conn,leases,mac):
+	results = conn.query(leases).filter(leases.mac == mac).all()
+	results = [t[0] for t in results]
+	for ip in results:
+		print(ip)",使用ORM的方式，利用$conn$执行SQL（根据$mac$查询$leases$表中全部信息），并获取查询到的所有数据，用for循环遍历获取的所有查询结果，将每条数据的第0个元素插入一个list中，使用for循环打印这个list。,"Use the ORM method and $conn$ to execute SQL (query all the information in the $leases$ table according to $mac$), get all the queried data, use for loop to traverse all the query results, insert the 0th element of each piece of data into a list, and use for loop to print the list."
+14136,"import logging
+from sqlalchemy import create_engine
+def my_query(url, enumber):
+	engine = create_engine(url)
+	try:
+		stm = ""select task_id from finishedtask where task_enumber=:enumber""
+		res = engine.execute(stm, {""enumber"":enumber}).fetchall()
+		return res
+	except Exception as e:
+		logging.error(e)",通过$url$获取数据库引擎。尝试设置SQL：查询finishedtask表中task_enumber为$enumber$的task_id数据。执行SQL获取所有数据并将其返回。如果出现Exception，则通过logging.error()方法返回异常信息。,"Get the database engine by $url$. Try to set the SQL: Query the task_id data with task_enumber of $enumber$ in the finishedtask table. Execute SQL to get all data and return. If there is an Exception, return the exception information by logging.error() method."
+11440,"import csv
+def select_isbn(conn):
+	f = open(""books.csv"")
+	reader = csv.reader(f)
+	for author in reader:
+		sql = ""SELECT isbn FROM books WHERE author =: author""
+		isbns = conn.execute(sql,{""author"":author}).fetchall()
+		print(isbns)","打开并读取文件""books.csv""，循环文件中的author，设置SQL（根据每条author查询books表中isbn列），利用$conn$执行获取所有查询结果并打印。","Open and read the file ""books.csv"", loop 'author' in the file, set the SQL (query the isbn column in the books table based on each author), use $conn$ to execute to get all the query results and print."
+11310,"from sqlalchemy.sql import select
+from sqlalchemy import create_engine
+def getEntryFromUserTable(URI,user,userID):
+	engine = create_engine(URI)
+	connection = engine.connect()
+	selectUser = select(user).where(user.c.userID == userID)
+	for row in connection.execute(selectUser):
+		print(row)",根据python表达式设置SQL：（根据$userID$查询$user$表中所有列的所有结果）。通过$URI$获取数据库引擎执行SQL并使用for循环遍历每一项查询结果，最后打印每一条结果。,"Set SQL according to the python expression: (query all the results of all columns in the $user$ table based on $userID$). Get the database engine through $URI$ to execute SQL, use for loop to traverse each query result, and finally print each result."
+11463,"from sqlalchemy.sql import select
+def is_custom_types(conn, table, rec_id):
+	sql = select([table.c.purchase_type]).where(table.c.rec_id == rec_id)
+	types = conn.execute(sql).fetchall()
+	if len(tuple(types)) != 0:
+		return True
+	else:
+		return False",根据python表达式设置SQL：（根据$rec_id$查询$table$表中purchase_type列）。通过$conn$执行SQL并获取所有数据，如果转化为tuple的查询结果的长度不等于0，返回True，否则返回False。,"Set SQL based on the Python expression: (query $table$ table for purchase_type column based on $rec_id$). Execute SQL by $conn$ and get all the data, return True if the length of the query result converted to tuple is not equal to 0, otherwise return False."
+11003,"def read_from_sql_server(conn,db_id):
+	dbtexts = conn.execute(""SELECT * FROM db_table WHERE db_id=:db_id"",{""db_id"":db_id})
+	return dbtexts.fetchall()",使用$conn$执行SQL（根据$db_id$获取db_table中的所有数据）。返回执行语句后的所有查询结果。,Use $conn$ to execute SQL (get all data in db_table based on $db_id$). Return all the query results after executing the statement.
+11563,"from flask import jsonify
+def query_books(conn, isbn, title):
+	row = conn.execute(""SELECT * FROM books WHERE isbn = :isbn AND title = :title"", {""isbn"": isbn,""title"": title}).fetchall()
+	if row is None:
+		return jsonify({""error"": ""Not Found""})
+	else:
+		return row","使用$conn$连接执行SQL语句：根据$isbn$和$title$获取books表中的所有列，并获取所有数据。如果查询结果为空，则使用jsonify返回""error""，其内容为""Not Found""；否则返回查询结果。","Use $conn$ connection to execute SQL statement : Get all columns in books table based on $isbn$ and $title$, and get all data. If the query result is empty, use jsonify to return ""error"" with the content ""Not Found""; otherwise, return the query result."
+13515,"def get_beers(engine,manufacturer):
+	with engine.connect() as con:
+		rs = con.execute('SELECT itemName FROM items where manufacturer=:manufacturer',{""manufacturer"":manufacturer}).fetchall()
+		return [dict(row) for row in rs]",使用with语句根据$engine$连接数据库。执行SQL（根据$manufacturer$表items中itemName列），并获取所有查询结果，将查询结果每一项转化为dict存储为list并返回。,"Use the with statement to connect the database according to $engine$. Execute the SQL (according to the itemName column of items in the $manufacturer$ table), get all the query results, convert each item of the query results to dict, store them as list, and return."
+14043,"def evaluateUsersWithFewSessions (conn, userid, sessionid):
+	query = 'select * from flow where userid =:userid and sessionid = :sessionid'
+	resultFlowPerUser = conn.execute(query,{""userid"":userid,""sessionid"":sessionid}).fetchall()
+	for userFlow in resultFlowPerUser:
+		print (userFlow.userid)",设置SQL语句（根据$userid$和$sessionid$查询flow表中的所有列），使用$conn$执行SQL获取所有数据，for循环遍历查询结果，打印查询结果的userid属性值。,"Set the SQL statement (query all columns in the flow table based on $userid$ and $sessionid$), use e$conn$ to execute SQL to get all the data, use for loop traversal to query the results, and print the userid attribute value of the query results."
+14248,"from flask import render_template
+def index(conn):
+	members = conn.execute(""SELECT * FROM members"").fetchall()
+	return render_template(""index.html"", members = members)","使用$conn$执行SQL语句（查询members表中的所有列）获取所有数据，渲染并返回""index.html"", 其中members参数为执行结果。","Use $conn$ to execute the SQL statement (query all the columns in the members table) to get all the data, render and return ""index.html"", where the members parameter is the execution result."
+11175,"def get_seq_list_from_db(conn,schemaval):
+	sql = ""SELECT sequence_name FROM sequences WHERE schemaval=""+schemaval
+	names =conn.execute(sql)
+	return [name[0] for name in names]",设置SQL（通过$schemaval$查询sequences中的所有sequence_name），通过$conn$连接执行SQL并获取数据。将查询结果每一项的第0个元素存储为list并返回。,"Set up the SQL (query all sequence_name in sequences where schemaval is $schemaval$) , execute the SQL over the $conn$ connection and get the data. Store the 0th element of each item of the query result as a list and return."
+13975,"def get_dns_http(ses, d_id):
+	sql = ""SELECT * FROM dnsreqs WHERE d_id =: d_id""
+	results = ses.execute(sql,{""d_id"":d_id}).fetchall()
+	for row in results:
+		print(row)",将SQL语句设置为：通过$d_id$查询dnsreqs表中的所有列，使用$ses$执行SQL获取所有数据，for循环遍历执行结果并打印。,"Set the SQL statement: Query all the columns in the dnsreqs table with $d_id$, use $ses$ to execute SQL to get all the data. For loop iterates through the execution results and print."
+11206,"def category_id(conn,category):
+	sql = 'SELECT category_id FROM Categories WHERE category={}'.format(category)
+	result = conn.execute(sql).fetchall()
+	return result",使用format格式化方法设置SQL，内容是根据$category$从Categories表中查询category_id，然后利用$conn$执行并获取所有数据，最后返回数据；,"Use format method to set the SQL: Query the category_id from the Categories table based on $category$, then use $conn$ to execute and get all the data, and finally return the data."
+13654,"def get_frequents(engine, drinkerID):
+	with engine.connect() as con:
+		sql = ""SELECT name FROM D WHERE drinkerID = :drinkerID""
+		rs = con.execute(sql,{""drinkerID"",drinkerID}).fetchall()
+		return [dict(row) for row in rs]",在with语句中使用$engine$获取连接并执行如下代码：设置SQL：根据$drinkerID$查询D表中的name信息；使用连接执行SQL并获取所有数据；将查询结果中每一项转化为dict类型并返回。," In the with statement, use $engine$ to get the connection and execute the following code to set the SQL: query the name information in Table D based on $drinkerID$. Execute the SQL using the link and obtain all the data, convert each item in the query result to a dict type and return."
+13387,"from sqlalchemy import create_engine
+from flask import render_template
+def listteam(DATABASEURI,id):
+	engine = create_engine(DATABASEURI)
+	conn = engine.connect()
+	res=conn.execute(""SELECT * FROM teams WHERE id=:id"",{""id"":id}).fetchall()
+	return render_template(""listteam.html"",rows = res)","通过$DATABASEURI$获取数据库引擎并建立连接。执行SQL语句（根据$id$查询teams表中所有列），并获取所有数据，将查询结果作为参数rows的值，返回渲染后的""listteam.html""页面。","Get the database engine and establish a connection through $DATABASEURI$. Execute the SQL statement (query all the columns in the teams table according to $id$), get all the data, take the query result as the value of the parameter rows, and return the rendered ""listteam.html"" page."
+11572,"def main(conn, fid):
+	fout = conn.execute(""SELECT destination FROM flights WHERE fid = :fid"", {""fid"": fid}).fetchone()
+	if fout is None:
+		print('Error: no such flight.')
+		return
+	for fout in fout:
+		print(fout)",使用$conn$连接执行SQL（通过$fid$查询flights表中的第一条destination数据）。如果查询结果为空，打印'Error: no such flight.'并返回。for循环遍历查询结果并打印。,"Use the $conn$ connection to execute SQL (query the first destination data in the flights table through $fid$). If the query result is empty, print 'Error: no such flight.' and return. Use for loop to traverse the query result and print it."
+14194,"from sqlalchemy.sql import select,func,and_
+def get_undescribed_article_count(connection, articles_table, month, year):
+	s = select([func.count(articles_table)]).where(and_(articles_table.c.month == month, articles_table.c.year == year))
+	rp = connection.execute(s).fetchone()
+	return rp",使用Python表达式的方式设置SQL语句：根据$month$和$year$查询$articles_table$表中的数据统计值，使用$connection$执行SQL获取第一条数据，返回执行结果。,"Use the Python expression to set up the SQL statement: Query the statistics values in the $articles_table$ table based on $month$ and $year$, use $connection$ to execute the SQL to get the first piece of data and return the execution result."
+13520,"from flask import render_template
+def index(conn,name):
+	flights = conn.execute(""select * from flights where name=:name"",{""name"":name}).fetchall()
+	assert flights!=[]
+	return render_template(""index.html"", flights=flights)","利用$conn$执行SQL（根据$name$查询flights表中所有列），并获取所有查询结果，设置断言判断查询结果长度是否不等于0，返回渲染后的""index.html""页面，其中参数flights设置为查询结果。","Use $conn$ to execute SQL (query all columns in the flights table according to $name$), get all the query results, set assertions to determine whether the query result length is not equal to 0, and return to the rendered ""index.html"" page, where the parameter flights is set to the query result."
+11125,"def avail_to_db(conn,available_bikes):
+	data_points = conn.execute(""SELECT number FROM availability_data WHERE available_bikes=:available_bikes"",{""available_bikes"":available_bikes}).fetchall()
+	for data in data_points:
+		print(data)",使用$conn$连接数据库，执行SQL语句（通过$available_bikes$查询availability_data表中的所有number数据），使用for循环遍历查询结果并将其打印。,"Connect to the database using $conn$, execute SQL statements (query all number data in the availability_data where available_bikes is $available_bikes$) , and use the for loop to traverse the query results and print them."
+11056,"from sqlalchemy.sql import select
+def get_contact(conn,contacts,contact_uuid):
+	first = select(contacts.c.id).where(contacts.c.uuid == contact_uuid)
+	contact = conn.execute(first).fetchone()
+	if contact is not None:
+		return contact
+	else:
+		return None",使用python表达式设置SQL（查询当uuid为$contact_uuid$时$contacts$表中的id）。使用$conn$执行SQL并获取第一条数据。如果获取的数据不为None，则返回查询结果。否则返回None。,"Use the python expression to set SQL (query the id in the $contacts$ table when uuid is $contact_uuid$). Use $conn$ to execute SQL and get the first piece of data. If the data obtained is not None, return the query result. Otherwise, None is returned."
+13423,"from sqlalchemy.sql import select
+def select_mode(conn, SubDomain, is_new):
+	sql = select(SubDomain).where(SubDomain.c.is_new == is_new)
+	results = conn.execute(sql).fetchall()
+	results_list = []
+	for result in results:
+		results_list.append(result)
+	return results_list",根据python表达式的方式使用$conn$执行SQL（根据$is_new$获取$SubDomain$表中的所有列）并获取所有数据，然后使用for循环对查询结果的每一项转化为list，最后返回list内容,Use $conn$ to execute SQL based on the Python expression (get all columns in $SubDomain$ table based on $is_new$) and get all the data. Then use for loop to convert each item of query result into list and finally return the contents of list.
+13885,"def select_keys(conn, key):
+	result = conn.execute(""SELECT * FROM table WHERE key = :key"", {""key"": key}).fetchall()
+	result = [x[0] for x in result]
+	return result",使用$conn$执行SQL语句：根据$key$获取table中的所有列，执行SQL并获取所有数据，将查询结果每一项的第0个元素存储为list并返回。,"Use $conn$ to execute SQL statement: Get all columns in table based on $key$, execute SQL and get all the data. Store the 0th element of each item of query results as list and return it."
+11449,"from sqlalchemy.sql import select
+def get_source(engine, id, eta):
+	with engine.connect() as conn:
+		sql = select([eta]).where(eta.c.SPRINT_ID == id)
+		etas = conn.execute(sql).fetchall()
+		return [dict(row) for row in etas]","使用with语句根据$engine$连接数据库。根据python表达式设置SQL：（根据SPRINT_ID为$id$查询$eta$表中所有列）。执行SQL语句并获取所有数据，使用for循环将查询结果的每一条转化为dict,以list存储并返回。","Use 'with' statement to connect to database based on $engine$. Set SQL based on the Python expression: (query all columns in $eta$ table based on SPRINT_ID: $id$). Execute SQL statement, get all the data, use for loop to convert each query result to dict, store in list and return."
+11017,"def get_unique_constraint(conn,uc_name):
+	ucname = conn.execute(""SELECT old FROM table_namet WHERE name=:uc_name"",{""uc_name"":uc_name}).fetchall()
+	namet=[]
+	for r in ucname:
+		namet.append(r[0])
+	return namet",使用$conn$执行SQL（根据$uc_name$查询table_namet表中的old信息）并获取所有数据。利用for循环将结果中每一项的第0好元素存入到list并返回。,Use $conn$ to execute the SQL (query the table_namet table for old information based on $uc_name$) and get all the data. Use for loop to store the 0th element of each item in the result to list and return.
+11030,"import sqlalchemy
+def init_pg(url,Story_table,author):
+	try:
+		conn = sqlalchemy.create_engine(url, client_encoding='utf8')
+		values = conn.query(Story_table).filter(Story_table.author == author).all()
+		return values
+	except Exception as ex:
+		raise ex",尝试执行如下代码：通过$url$获取连接并设置client_encoding参数为“'utf8'”。用ORM方式执行SQL（根据$author$查询$Story_table$表中的所有列）并获取所有查询结果。最后将查询结果返回。如果出现异常，则打印异常信息。,"Try to execute the following code: Get the connection through $url$ and set the client_encoding parameter to 'utf8'. Execute SQL in ORM (query all columns in the $Story_table$ table based on $author$) and get all the query results. Finally, return the query result. If an exception occurs, print the exception information."
+11695,"from sqlalchemy import create_engine
+def get_target(conn_string,url,email,id):
+	engine = create_engine(conn_string)
+	sql = ""select target from targets where url=:url and email=:email and id=:id""
+	target = engine.execute(sql,{""url"":url,""email"":email,""id"":id}).fetchone()
+	return target",利用$conn_string$获取数据库引擎并执行SQL（根据$url$、$email$和$id$获取targets表中的target列）并获取第一条数据，最后返回查询结果,"Use $conn_string$ to get the database engine and execute SQL (get the target column in the targets table based on $url$, $email$ and $id$), get the first piece of data, and finally return the query result."
+11488,"from sqlalchemy import create_engine
+def select_value(connection_string, value):
+	engine = create_engine(connection_string, echo=False)
+	conn = engine.connect()
+	query_sql = ""SELECT * FROM saltie WHERE value =: value""
+	results = conn.execute(query_sql,{""value"":value}).fetchall()
+	conn.close()
+	return results",通过$connection_string$获取数据库引擎，参数echo为False，并建立连接。设置SQL语句（根据$value$查询saltie表中所有列），并获取所有数据，关闭连接，将查询结果返回。,"Get the database engine via $connection_string$ with the echo parameter being False, and establish a connection. Set up the SQL statement (query all the columns in the saltie table based on $value$), get all the data, close the connection, and return the query results."
+14119,"from sqlalchemy.sql import select
+def get(conn, files, path):
+	s = select([files.c.hash], files.c.path == path)
+	r = conn.execute(s).fetchone()
+	conn.close()
+	if not r:
+		return False
+	return r[0]",使用Python表达式的方式设置SQL语句为：通过$path$获取$files$表中的hash信息，执行SQL获取第一条数据，确保$conn$关闭，如果没有查询结果则返回False，否则返回查询结果的第0个元素。,"Use the Python expression to set the SQL statement as follows: Get the hash information in the $files$ table through $path$, execute SQL to get the first piece of data, make sure that $conn$ is closed. If there is no query result, return False, otherwise return the 0th element of the query results."
+11294,"def generateDrinkerID(drinkerID,engine):
+	with engine.connect() as con:
+		query =""SELECT * FROM drinkers WHERE drinkerID=:drinkerID""
+		rs = con.execute(query,{""drinkerID"":drinkerID}).fetchall()
+		return rs",通过with语句使用$engine$连接数据库，执行SQL(根据$drinkerID$获取drinkers中的所有列)并获取所有数据，最后返回查询结果,"Use $engine$ to connect to the database by the with statement, execute the SQL (get all columns in drinkers based on $drinkerID$) and get all data. Finally return the query result."
+13191,"def get_table_list_from_db(conn,table_schema):
+	sql=""select table_name from information_schema where table_schema=:table_schema""
+	res=conn.execute(sql,{""table_schema"":table_schema}).fetchall()
+	return [name[0] for name in res]",使用$conn$执行SQL(根据$table_schema$获取information_schema表中的table_name列)并获取所有数据，然后使用for循环对查询结果的每一项的第0个元素存储为list类型并返回,"Execute the SQL (get the table_name column in the information_schema where table_schema is $table_schema$) with $conn$ and get all the data, then use the for loop to store the list type for the tenth element of each item in the query result and return."
+14047,"import csv
+def main(conn):
+	f = open(""books.csv"")
+	reader = csv.reader(f)
+	for title in reader:
+		res = conn.execute(""select isbn from books where title=:title "", {""title"": title}).fetchall()
+		print(res)",打开books.csv文件并进行读取，使用for循环遍历读取内容，使用$conn$执行SQL语句：通过title查询books表中的所有isbn，打印查询结果。,"Open the books.csv file and read it, use for loop traversal to iterate over the content, and use $conn$ to execute the SQL statement: Query all the isbn in the books table through 'title' and print the query results."
+13484,"def get_pelis_by_name(conn, titulo):
+	if titulo is not None:
+		sql = ""SELECT * FROM peliculas where titulo =: titulo""
+		results = conn.execute(sql,{""titulo"":titulo}).fetchall()
+		pelicula = []
+		for row in results:
+			pelicula.append(row)
+		return pelicula","如果$titulo$不是None,则通过$conn$执行SQL（根据$title$获取peliculas表中的所有列）并获取所有数据，然后使用for循环对查询结果的每一项存储为list，最后返回list","If $titulo$ is not None, then execute SQL through $conn$ (get all columns in the peliculas table based on $title$) and get all the data. Then use for loop to store each item of the query results as list and finally return the list."
+13866,"from sqlalchemy import create_engine
+def query_info(sqlite, hid):
+	engine = create_engine(sqlite)
+	hres = engine.execute(""SELECT name FROM hello WHERE hid = :hid"", {""hid"": hid}).fetchone()
+	return hres",通过$sqlite$获取数据库引擎。执行SQL语句（根据$hid$查询hello表中的第一条name数据），返回所有的查询结果。,Get the database engine through $sqlite$. Execute the SQL statement (query the first piece of name data in the hello table based on $hid$). Return all the query results.
+11348,"def save_products(conn,id_orig,id_sub):
+	data = conn.execute(""SELECT * FROM Substitutes where id_orig=:id_orig and id_sub=:id_sub"", {""id_orig"": id_orig,""id_sub"":id_sub}).fetchall()
+	response = []
+	for i in data:
+		response.append(i)
+	if len(response)==0:
+		return None
+	return response",使用$conn$执行SQL（根据$id_orig$和$id_sub$查询Substitutes表中所有列）并获取所有数据，并将查询的结果的每一项添加到空list中，如果list的长度为0，返回None，否则，返回list形式的查询结果,"Use $conn$ to execute SQL (query all columns in the Substitutes table based on $id_orig$ and $id_sub$), get all the data, and add each item of the query result to the empty list. If the length of list is 0, return None; otherwise, return the query result in list form."
+14227,"def getRegioneId_sql(conn,nome):
+	c = conn.cursor()
+	query=""select id from regione where nome =:nome""
+	res=c.execute(query,{""nome"":nome}).fetchall()
+	conn.close()
+	return res[0]",通过$conn$创建游标对象，设置SQL语句为：查询regione表中nome为$nome$的id数据，执行SQL语句获取全部数据，确保$conn$关闭，返回执行结果的第0个元素。,"Create a cursor object through $conn$, set the SQL statement: Query the id data in the regione table where nome is $nome$, execute the SQL statement to get all the data, make sure that $conn$ is closed, and return the 0th element of the execution result."
+11094,"def download_key(conn,name,system_uuid):
+	longres=conn.execute(""SELECT keyfile FROM clients WHERE name=:name AND system_uuid=:system_uuid"",{""name"":name,""system_uuid"":system_uuid}).fetchall()
+	if len(longres) == 0:
+		return longres",使用$conn$执行SQL（根据$name$和$system_uuid$查询clients表中的keyfile）并获取所有数据。如果查询结果长度不为0，则返回查询结果。,"Use $conn$ to execute SQL (query the keyfile in the clients table based on $name$ and $system_uuid$) and get all the data. If the query result length is not 0, return the query result."
+11192,"import csv
+def export_csv(conn,Filename):
+	res_File=conn.execute(""SELECT fileval FROM pdf WHERE Filename=:Filename"",{""Filename"":Filename}).fetchall()
+	f = open('fingerprint.csv','wb')
+	wrtr = csv.writer(f)
+	for row in res_File:
+		wrtr.writerow(row)","通过$conn$连接执行SQL（通过$Filename$查询pdf表中的所有fileval数据）。以二进制写方式（wb）打开fingerprint.csv文件。for循环遍历查询结果,按行将查询结果写入csv文件中。","Execute SQL over a $conn$ connection (query all fileval data in the pdf where the name of file is $Filename$). Open fingerprint.csv using binary write mode (wb). The for loop iterates through the query results, and write the query results to a CSV file on a row basis."
+14082,"from sqlalchemy.sql import select
+def reading(connection,Department,name):
+	find_it=select([Department.c.id]).where(Department.c.name == name)
+	rs = connection.execute(find_it).fetchone()
+	print(rs)
+	return rs",使用Python表达式的方式设置SQL语句：通过$name$查询$Department$表中的id。通过$connection$执行SQL并获取第一条数据，打印查询结果并返回。,"Use the Python expression to set up the SQL statement: Query the id in the $Department$ table through $name$. Execute SQL through $connection$ and get the first piece of data, print the query result and return."
+13560,"from flask import render_template
+def write_review(conn,isbn):
+	if isbn == None:
+		return render_template(""not_logged_in.html"")
+	reviewers = conn.execute(""SELECT reviewer FROM reviews WHERE isbn=:isbn;"",{""isbn"": isbn}).fetchall()
+	u_lis = []
+	for user in reviewers:
+		u_lis.append(user)
+	return render_template(""write_review.html"",isbn=isbn)","如果$isbn$为空，返回渲染后的""not_logged_in.html""页面，否则利用$conn$执行SQL（根据$isbn$查询reviews表中reviewer列），并获取所有查询结果，用for循环遍历获取的所有查询结果，将每条数据插入一个list中。返回渲染后的""write_review.html""页面，其中参数isbn为$isbn$。","If $isbn$ is empty, return the rendered ""not_logged_in.html"" page; otherwise, use $conn$ to execute SQL (query the reviewer column in the reviews table according to $isbn$), get all the query results, use for loop traversal to get all the query results, and insert each piece of data into a list. Return the rendered ""write_review.html"" page, where the parameter isbn is $isbn$."
+13944,"from flask import jsonify
+def bookapi(conn, isbn):
+	book = conn.execute(""SELECT * FROM books where isbn = :isbn"", {""isbn"":isbn}).fetchone()
+	if book:
+		return jsonify(book)",使用$conn$连接执行SQL语句（根据$isbn$查询books中的所有列）并获取第一条数据。如果执行结果存在，使用jsonify返回执行结果。,"Use the $conn$ connection to execute the SQL statement (query all the columns in the books based on $isbn$) and get the first piece of data. If the execution result exists, use jsonify to return the execution result."
+14179,"def get_select(conn,company):
+	res = conn.execute(""select job_name from jobzl where company = :company"",{""company"":company}).fetchall()
+	assert res != []
+	print(res)
+	return res",通过$conn$执行SQL：通过$company$获取jobzl中的全部job_name，设置断言判断获取的结果不为空list，打印获取的结果并将其返回。,"Execute SQL via $conn$: Get all the job_name in jobzl via $company$, set the assertion to determine that the obtained result is not an empty 'list', print the obtained result and return."
+13932,"from flask import render_template
+def searchResult(conn, author):
+	sql = ""SELECT year FROM books WHERE author =: author""
+	results = conn.execute(sql,{""author"":author})
+	listFound = list(results)
+	if len(listFound) == 0:
+		return render_template(""failure.html"")
+	return render_template(""found.html"")","设置SQL语句为根据$author$获取books表中的year数据，使用$conn$连接执行SQL语句，将执行结果转化为list。如果list内容的长度为0，渲染并返回""failure.html""；否则，渲染并返回""found.html""。","Set the SQL statement based on $author$, get the year data in the books table, execute the SQL statement with the $conn$ connection, and convert the execution result to list. If the length of the list content is 0, render and return ""failure.html""; otherwise, render and return ""found.html""."
+11477,"def select_state(conn, ORDER_ID):
+	try:
+		get_state = ""SELECT order_state FROM order WHERE ORDER_ID =: ORDER_ID""
+		states = conn.execute(get_state,{""ORDER_ID"":ORDER_ID}).fetchall()
+		return [state for state in states]
+	except:
+		print('fail to get order_state')",尝试设置SQL（根据$ORDER_ID$查询order表中order_state列），根据$conn$执行SQL并获取所有查询结果，用for循环遍历获取的所有查询结果，将每条数据插入一个list中，并返回这个list。如果捕获到异常，打印'fail to get order_state'。,"Try to set up SQL (query order_state column in order table based on $ORDER_ID$), execute SQL based on $conn$ and get all the query results. Use for loop to iterate through all the obtained query results, insert each data into a list and return the list. If an exception is caught, print 'fail to get order_state'."
+14252,"from sqlalchemy.sql import select
+def test_lobs_without_convert(conn,t,ID):
+	row = conn.execute(select(t.c.name).where(t.c.id == ID)).fetchone()
+	return row",使用Python表达式的方式，通过$conn$连接查询$t$表中id为$ID$的第一条name，返回查询结果。,Use the Python expression to query the first 'name' in the $t$ table where the id is $ID$ through the $conn$ connection and return the query result.
+11041,"def get_inf(e,airport):
+	conn = e.connect()
+	weat = conn.execute(""SELECT weather_cond FROM airport_weather WHERE airport=:airport"",{""airport"":airport}).fetchall()
+	return [item[0] for item in weat]", 使用$e$获取连接。使用连接执行SQL（根据$airport$查询airport_weather中的weather_cond信息）并获取所有数据。将查询结果中每一项的第0号元素存入list中并返回。,Use $e$ to get the connection. Use the connection to execute the SQL (query the weather_cond information in airport_weather based on $airport$) and get all the data. Store the 0th element of each item in the query results in the list and return.
+13657,"from flask import render_template
+def Search_book(connection,isbn):
+	querys = ""SELECT review FROM books WHERE isbn=:isbn""
+	reviews = connection.execute(querys, {""isbn"":isbn}).fetchall()
+	return render_template('profile.html',reviews=reviews)",设置SQL（根据$isbn$查询books表中的review信息）。使用$connection$执行SQL并获取所有数据。返回渲染后的'profile.html'并将查询结果传入reviews参数。,Set SQL (query the books table for review information where isbn is $isbn$). Execute the SQL using $connection$ and get all the data. Return the rendered 'profile.html' and pass the query results to the reviews parameter.
+13147,"from flask import render_template
+def flights(conn, password):
+	query = ""select time from flights where password =: password""
+	res = conn.execute(query,{""password"":password}).fetchall()
+	return render_template(""flights.html"",res=res)","使用$conn$执行SQL(根据$password$获取flights表中的time列)并获取所有数据，最后返回渲染后的""flights.html""，其中res参数为查询结果","Execute the SQL (get the time column in the flights where password is $password$) with $conn$, get all the data, and finally return the rendered ""flights.html"" with the RES parameter as the result of the query."
+13222,"def search(testing):
+	with testing.connect() as conn:
+		results = conn.execute(""SELECT * FROM table1"").fetchall()
+		return [tuple(row) for row in results]",在with语句中根据$testing$获取数据库连接，执行SQL语句（查询table1表中的所有列）并获取所有数据。将查询结果中每一项转化为tuple并以list形式返回。,"Get the database connection from $testing$ in the with statement, execute the SQL statement (query all columns in the table1) and get all the data. Convert each item in the query result into a tuple and return it as a list."
+13877,"from sqlalchemy.sql import select
+def get_plot_customer(conn,parent_plots,plotname):
+	try:
+		s = select(parent_plots.c.customer_id).where(parent_plots.c.plotname == plotname)
+		customer_id = conn.execute(s).fetchall()
+		return customer_id
+	except:
+		return []",尝试性使用python表达式的方式设置SQL语句：根据$plotname$获取$parent_plots$表中的customer_id数据，使用$conn$连接执行SQL语句并获取全部数据，返回所有的查询结果。通过如果出现异常，返回空list。,"Try to use the Python expression to set up SQL statement: Get customer_id data in the $parent_plots$ table based on $plotname$, use $conn$ connection to execute SQL statement and get all the data. Return all query results. If exception occurs, return the empty list."
+14003,"def getCustomer(db_engine, username, password):
+	db_conn = db_engine.connect()
+	res=db_conn.execute(""select * from customers where username= :username and password=:password"",{""username"":username,""password"":password}).fetchone()
+	db_conn.close()
+	if res is None:
+		return None
+	else:
+		return {'firstname': res['firstname'], 'lastname': res['lastname']}",通过$db_engine$连接数据库。执行SQL语句（根据$username$和$password$获取customers表中的所有列）并获取第一条数据，确保数据库连接关闭。如果获取数据为空，返回None；否则，返回查询结果中firstname和lastname对应的数据。。,"Connect to the database through $db_engine$. Execute the SQL statement (get all the columns in the customers table based on $username$ and $password$) and get the first piece of data to ensure that the database connection is closed. If the fetched data is empty, return None; otherwise, return the data corresponding to firstname and lastname in the query result."
+13942,"def select_duration(conn, id):
+	duration_sql = ""SELECT duration FROM flights WHERE id =: id""
+	durations = conn.execute(duration_sql,{""id"":id}).fetchall()
+	return [dict(duration) for duration in durations]",设置SQL语句，其内容为：查询flights表中id为$id$的duration数据，使用$conn$连接执行SQL获取所有数据，将查询结果每一项转化为dict存储为list并返回。,"Set the SQL statement and the content is as follows: Query the duration data in the flights table where id is $id$, use the $conn$ connection to execute SQL, get all the data, convert each item of the query result into dict, store it as list, and return."
+13363,"def sampleJson(conn,date_now):
+	query = ""SELECT otu_id FROM Samples WHERE date_now=%s""%date_now
+	queryData=conn.execute(query)
+	queryList = [each for each in queryData]
+	return queryList","使用字符串匹配方法设置sql（根据$date_now$查询Samples表中otu_id列）,使用$conn$执行SQL，利用for循环遍历所有查询结果,以list存储并返回","Use the string matching method to set sql (query the otu_id column in the Samples table according to $date_now$), use $conn$ to execute SQL, use for loop to traverse all query results, store it as list and return."
+13608,"from flask import render_template, request
+def login(db,logusername,logpassword):
+	if request.method == 'GET':
+		return render_template(""index.html"")
+	if request.method == ""POST"":
+		user = db.execute(""select user from users where username = :username and password = :password"", {""username"": logusername , ""password"": logpassword}).fetchone()
+		return render_template('main.html', user = user)","如果request的请求方式是GET，则返回渲染后的""index.html""。如果request的请求方法是POST，则使用$db$执行SQL（当username为$logusername$，password为$logpassword$的时候，查询users中的user信息）并获取第一条数据。返回渲染后的'main.html'，并将查询结果传入user参数中。","If the request is GET, the rendered 'index.html' is returned. If the request method is POST, execute the SQL using $db$ (querying user information in users where username is $logusername$ and whewre password is $logpassword$) and get the first data. Returns the rendered 'main.html', and pass the query result into the user parameter."
+14004,"from flask import render_template
+def book(db, book_id):
+	book = db.execute(""SELECT * FROM books WHERE id = :id"", {""id"": book_id}).fetchone()
+	reviews = db.execute(""SELECT * FROM reviews WHERE book_id = :id"",{""id"": book_id},).fetchall()
+	return render_template(""book.html"", book=book, reviews=reviews)","step1：通过$db$执行SQL语句：根据$book_id$查询books表中的所有列，并获取第一条数据。step2：通过$db$执行SQL语句：根据$book_id$查询reviews表中的所有列，并获取全部数据。渲染并返回""book.html""，其中book参数为step1的查询结果，reviews参数为step2的查询结果。","Step1: Executes the SQL statement through $db$: Query all the columns in the books table based on $book_id$ and get the first piece of data. Step2: Execute the SQL statement through $db$: Query all the columns in the 'reviews' table based on $book_id$ and get all the data. Render and return ""book.html"", where the book parameter is the query result of step1 and the 'reviews' parameter is the query result of step2."
+11132,"def reflesh_profit_peaks_botts(conn,code):
+	sql = ""SELECT count(*) FROM data_hist WHERE code={}"".format(code)
+	infor = conn.execute(sql).fetchall()
+	conn.close()
+	return infor","设置SQL（通过format()函数格式化字符串,使用字符串$code$查询data_hist表中所有数据的数量），使用$conn$执行SQL语句获取全部数据，确保数据库连接关闭并返回查询结果。","Set the SQL (query all data in the data_hist with the string $code$ through the format () function format string) , execute the SQL statement with $conn$ to get all the data, make sure the database connection is closed and return the query results."
+14041,"def main(con):
+	res = con.execute(""select rating from comments"").fetchall()
+	return res",使用$con$执行SQL：从comments表中查询所有rating数据，并返回查询结果。,Use $con$ to execute SQL: To query all rating data from the comments table and return the query results.
+13183,"def test_query_with_parameter(conn,word):
+	query =""SELECT * from sqlalchemy where word=:word""
+	result = conn.execute(query,{""word"":word}).fetchall()
+	assert result != []
+	print(result) 
+	return result",使用$conn$执行SQL（根据$word$获取sqlalchemy表中的所有列）并获取所有数据，然后设置断言查询结果不为list类型，再打印查询结果，最后返回查询结果,"Execute SQL with $conn$ (get all columns in sqlalchemy where word is $word$) and get all data, then set the assertion query result not to be of type list, print the query result, and return the query result."
+11327,"def get_wallet_by_tx(conn,id):
+	find_tx_sql_str = "" select wallet_id from transaction_records where id = %s""%(id)
+	data_query = conn.execute(find_tx_sql_str,{""id"":id}).fetchone()
+	if not data_query:
+		return
+	return data_query","设置SQL（根据$id$查询transaction_records表中wallet_id列）,使用$conn$执行SQL查询第一行数据，如果未查询到数据，返回空，否则返回查询到的数据。","Set up SQL (query the wallet_id column in the transaction_records table according to $id$), use $conn$ to execute the SQL to query the first row of data, and return empty if no data is queried; otherwise, return the queried data."
+14254,"def flight(conn, flight_id) :
+	passenger = conn.execute(""SELECT name FROM passengers WHERE flight_id = :flight_id"", {""flight_id"":flight_id}).fetchone()
+	assert len(passenger)!=0
+	return passenger",通过$conn$查询passengers表中flight_id为$flight_id$的第一条name，设置断言判断查询结果的长度不为0，返回查询结果。,"Query the first 'name' in passengers table where flight_id is $flight_id$ through $conn$ , set assertion to determine that the length of the query result is not zero and return the query result."
+11443,"def select_value(conn, id):
+	sql = ""SELECT origin FROM flights WHERE id =: id""
+	origins = conn.execute(sql,{""id"":id}).fetchall()
+	if len(origins) == 0:
+		print(""False"")
+	return origins","设置sql（根据$id$查询flights表中origin列）,使用$conn$执行SQL并获取所有查询结果，如果查询结果的长度为0，打印""False""，否则查询结果。","Set SQL (query the origin in the flights table based on $id$), use $conn$ to execute SQL and get all the query results. If the length of the query result is 0, print ""False"", otherwise print the query result."
+11671,"from flask import render_template
+def get_books(db,name,id):
+	bs = db.execute(""select * from books where book_name=:name and isbn=:id"",{""name"":name,""id"":id}).fetchall()
+	return render_template(""index.html"", books=bs)","利用$db$执行SQL（获取books表中book_name为$name$和isbn为$id$的所有列）并获取所有数据，最后返回渲染后的""index.html""，其中books参数为查询结果","Use $db$ to execute SQL (get all the columns in the books table where book_name is $name$ and isbn is $id$), get all the data, and finally return the rendered ""index.html"", where the books parameter is the query result."
+14111,"def okUser(conn, login):
+	my_user = conn.execute(""SELECT id FROM user where login =: login)"", {""login"":login}).fetchone()
+	if my_user:
+		return my_user",通过$conn$执行SQL：根据$login$查询user表中第一条id。如果查询结果存在，则将其返回。,"Execute SQL via $conn$: Query the first id in the user table based on $login$. If the query result exists, return it."
+11624,"def get_commendation_view(conn,val):
+	try:
+		result = conn.execute(""select * from db where values=:val"",{""val"":val}).fetchone()
+		return result
+	except Exception as ex:
+		print(ex)
+		return False",尝试使用$conn$执行SQL（根据values为$val$获取db表中的所有列）并获取第一行数据，返回查询结果，如果执行时出现异常，则打印异常并返回False,"Try to use $conn$ to execute SQL (get all the columns in the db table according to values for $val$) and get the first row of data, return the query result. If an exception occurs during execution, print the exception and return False."
+13518,"def getProfileImagingServer(conn,ProfilesData, gid):
+	pdata = conn.query(ProfilesData).filter(ProfilesData.c.FK_groups == gid).first()
+	if pdata == None:
+		return None
+	return pdata",根据python表达式，使用$conn$执行（根据FK_groups为$gid$查询$ProfilesData$表中所有列）。并获取第一条数据，如果查询结果为空，返回None，否则返回查询结果。,"Use $conn$ to execute SQL according to the python expression (query all columns in the $ProfilesData$ table where FK_groups is $gid$) and get the first piece of data. If the query result is empty, return None; otherwise, return the query result."
+11619,"def find_Description(conn,imageId):
+	desc = conn.execute(""SELECT description FROM Images WHERE imageID=:imageId"",{""imageId"":imageId}).fetchall()
+	return desc",使用$conn$执行SQL（根据imageID为$imageId$获取Images表中description列）并获取所有数据，最后返回查询结果,"Use $conn$ to execute SQL (get the description column in the Images table where imageID is $imageId$), get all the data, and finally return the query result."
+13408,"import sqlalchemy
+def test_basic_execute(tussl_test, time):
+	engine = sqlalchemy.create_engine(tussl_test)
+	connection = engine.connect()
+	data_sql = ""SELECT a FROM basic WHERE d =: time""
+	results = connection.execute(data_sql,{""time"":time}).fetchall()
+	assert len(results)!=0",使用$tussl_test$获取数据库引擎并连接数据库，然后执行SQL（根据d为$time$获取basic表中的a列）并获取所有数据，最后设置断言为查询结果的长度不为0,"Use $tussl_test$ to get the database engine and connect to the database, then execute SQL (get column 'a' in the basic table with d as $time$) and get all the data, and finally set the assertion that the length of the query result is not 0"
+11655,"from flask import render_template
+def search_year(db,isbn,title,author):
+	query = ""select year from books where isbn=:isbn and title=:title and author=:author""
+	rows = db.execute(query,{""isbn"":isbn,""title"":title,""author"":author})
+	if rows.rowcount == 0:
+		return render_template(""error.html"")
+	year = rows.fetchone()
+	return render_template(""results.html"", year=year)","使用$db$执行SQL（根据$isbn$、$title$和$author$获取books表中的year列），如果查询结果的行数为0，则返回渲染后的""error.html""，然后获取查询结果的第一条数据，最后返回渲染后的""results.html""，其中year参数为查询结果的第一条数据","Use $db$ to execute SQL (get the year column in the books table based on $isbn$, $title$ and $author$). If the number of rows of the query result is 0, return the rendered ""error.html"", then obtain the first piece of data of the query result, and finally return the rendered ""results.html"", where the year parameter is the first data of the query result."
+14288,"def main(con):
+	m_duration = con.execute(""SELECT max(duration) FROM flights"").fetchall()
+	return m_duration",使用$con$执行SQL语句：查询flights表中最大的duration，并获取全部数据，将获取到的数据返回。,"Execute the SQL statement with $con$: Query the largest duration in the flights table, get all the data, and return the obtained data."
+11107,"from flask import render_template
+def transactions(conn,id):
+	trans = conn.execute(""SELECT name FROM users WHERE id=:id"",{""id"":id}).fetchall()
+	return render_template(""success.html"",sender=trans.name)","使用$conn$查询users表中所有id为$id$的全部name。渲染并返回'success.html',其中sender参数是查询结果的name属性。","Use $conn$ to query all names in users where id is $id$. Render and return 'success.html', where the sender parameter is the name attribute of the query result."
+11681,"def get_origin(db,flights,dest,dur):
+	query = flights.select([flights.c.origin]).where(flights.c.destination==dest and flights.c.duration==dur)
+	origins = db.execute(query).fetchall()
+	return [o for o in origins]",根据python表达式的方法利用$db$执行SQL（获取$flights$表中destination为$dest$和duration为$dur$的origin列）并获取所有数据，最后使用for循环对查询结果的每一项转化为list类型并返回,"Use $db$ to execute SQL based on the python expression (get the origin column in the $flights$ table where destination is $dest$ and duration is $dur$) and get all the data. Finally, use for loop to convert each item of the query result to a list type and return."
+14053,"from sqlalchemy.sql import select
+def get_category_by_name(connection, categories_table, name):
+	try:
+		s = select([categories_table.c.categoryID]).where(categories_table.c.name==name )
+		result = connection.execute(s).fetchone()
+		return result
+	except Exception as e:
+		print(e)
+		return",尝试性通过$connection$使用Python表达式的方式设置SQL：根据$name$获取$categories_table$中的categoryID数据，执行SQL获取第一条数据并返回。如果出现Exception，打印异常信息并返回。,"Try to use $connection$ to use the Python expression to set SQL: To get the categoryID data in $categories_table$ according to $name$, execute SQL to get the first piece of data and return. If Exception occurs, print the exception message and return."
+13361,"def checkTable(dbcur,table_name):
+	res=dbcur.execute(""SELECT COUNT(*) FROM information_schema WHERE table_name=:table_name"",{""table_name"":table_name})
+	if not res.fetchone()[0] == 1:
+		return False
+	else:
+		return res.fetchone()[0]",使用$dbcur$执行SQL（根据$table_name$查询information_schema表中所有列的数量），如果获取的第一行数据的第0个元素不等于1，返回False，否则返回第一行数据的第0个元素。,"Use $dbcur$ to execute SQL (query the number of all columns in the information_schema table based on $table_name$) and return False, if the 0th element of the first row of data obtained is not equal to 1; otherwise, return the 0th element of the first row of data."
+13268,"from sqlalchemy.sql import select
+from sqlalchemy import create_engine
+def select_run(test, statuses):
+	engine = create_engine(test)
+	status = engine.execute(select([statuses])).fetchall()
+	for row in status:
+		print(row)",使用$test$获取数据库引擎，通过数据库引擎执行SQL（查找$statuses$所有列），获取所有数据并使用for循环打印所有数据,"Get the database engine using $test$, execute the SQL (find all columns of $statuses$) through the database engine, get all the data, and print all the data using the for loop."
+14177,"def get_sotcks_hist(conn_hist,date):
+	rawsql = ""SELECT * FROM stocks_hist WHERE date=:date""
+	res = conn_hist.execute(rawsql,date = date).fetchall()
+	if res:
+		return res",设置SQL语句为：查询stocks_hist表中date为$date$的所有列，通过$conn_hist$执行SQL获取全部数据。如果获取的数据不为空，则将其返回。,"Set the SQL statement: Query all columns in the stocks_hist table with 'date' of $date$, and execute SQL to get all the data via $conn_hist$. If the obtained data is not empty, return."
+11358,"def osmaxx_functions(conn,functions):
+	res = conn.execute('SELECT osm FROM scripts WHERE functions =:functions', {""functions"": functions}).fetchone()
+	return res[0]",使用$conn$执行SQL（根据$functions$查询scripts表中osm列的第一行数据），并将数据的第0个元素返回。,Use $conn$ to execute SQL (query the first row of data in the osm column of the scripts table based on $functions$) and return the 0th element of the data.
+13846,"def data_found(conn, tahun, kode, ref_kode):
+	data = conn.execute(""SELECT COUNT(*) FROM apbd WHERE tahun = :tahun AND kode = :kode AND ref_kode = :ref_kode"", {""tahun"": tahun, ""kode"": kode, ""ref_kode"": ref_kode }).fetchone()
+	return data",通过$conn$执行SQL语句：根据$tahun$、$kode$和$ref_kode$查询apbd表中所有列的统计值，获取第一条数据，返回查询结果。,"Execute SQL statement through $conn$: Query statistical values of all columns in the apbd table based on $tahun$, $kode$ and $ref_kode$. Get the first piece of data and return the query results."
+13575,"from flask import render_template
+from sqlalchemy import create_engine
+def articles(postgresql,title):
+	eng = create_engine(postgresql)
+	con = eng.connect()
+	result = con.execute(""select message from articles where title=:title"",{""title"":title}).fetchall()
+	con.close()
+	if result>0:
+		return render_template(""articles.html"",articles=result)","通过$postgresql$获取数据库引擎并建立连接。执行SQL语句（根据$title$查询articles表中message列），并获取所有数据，关闭连接，如果执行结果大于0，返回渲染后的""articles.html""页面，其中参数articles为查询结果。","Get the database engine and establish a connection through $postgresql$. Execute the SQL statement (query the message column in the articles table according to $title$), get all the data, close the connection. If the execution result is greater than 0, return the rendered ""articles.html"" page, where the parameter articles is the query result."
+11497,"def select_value(conn, startDate):
+	query_sql = ""SELECT * FROM usersdata WHERE startDate =: startDate""
+	data = conn.execute(query_sql,{""startDate"":startDate}).fetchall()
+	return [dict(d) for d in data]","设置sql（根据$startDate$查询usersdata表中全部信息）,使用$conn$执行SQL并获取所有查询结果，使用for循环将查询结果的每一条转化为dict,以list存储并返回","Set up SQL (query all the information in the usersdata table based on $startDate$), execute SQL with $conn$ and get all the query results. Use for loop to convert each query result to dict, and store it in list and return."
+13150,"from flask import render_template
+def books(conn, p1_index):
+	query = ""select * from books where p1_index =: p1_index""
+	res = conn.execute(query,{""p1_index"":p1_index}).fetchall()
+	return render_template(""p1_index.html"", books=res)","使用$conn$执行SQL（根据$p1_index$获取books表中的所有列）并获取所有数据，最后返回渲染后的""p1_index.html""，其中books参数为查询结果","Execute the SQL (get all the columns in the books where p1_index is $p1_index$) with $conn$ and get all the data, then return the rendered ""p1_index.html"" with the books parameter as the result of the query."
+13474,"def do_recover_twophase(connection):
+	resultset = connection.execute(""SELECT gid FROM pg_prepared_xacts"").fetchall()
+	print(resultset)
+	return [row[0] for row in resultset]",通过$connection$执行SQL（获取pg_prepared_xacts表中的gid列）并获取所有数据，然后打印查询结果，再使用for循环对查询结果中的每一项的第0个元素都存储为list，最后返回list,Execute SQL through $connection$ (get the gid column in the pg_prepared_xacts table) and get all the data. Then print the query results. Use for loop to store the 0th element of each item of the query results as list and finally return the list.
+14181,"def api(conn, isbn_code):
+	data = conn.execute(""SELECT * FROM books isbn = :isbn"", {""isbn"":isbn_code}).fetchone()
+	if data == None:
+		return 0
+	else: 
+		return dict(data)",通过$conn$连接执行SQL（查询books中isbn为$isbn_code$的所有列）获取第一条数据，如果获取数据为空，返回0；否则返回字典类型的执行结果。,"Execute SQL via $conn$ connection (query all columns in books with isbn of $isbn_code$) to get the first piece of data, and return 0 if the data is empty; otherwise, returm the execution result of the dictionary type."
+14019,"def process_comment(Comment, session, c_id):
+	try:
+		matching_comment = session.query(Comment).filter_by(Comment.id==c_id,).first()
+		return matching_comment
+	except:
+		raise
+	finally:
+		session.close()",尝试性通过$session$使用ORM方式查询$Comment$表id为$c_id$的第一条数据，返回查询结果。如果出现异常，则通过raise抛出异常。最后确保$session$关闭。,"In ORM, try to use $session$ to query the first piece of data in the $Comment$ table that the id is $c_id$ and return the query result. If an exception occurs, use 'raise' to throw the exception. Finally, make sure that $session$ is turned off."
+14134,"def getLastUpdatedDate(boxID, conn):
+	sql = ""SELECT LastUpdated from boxes WHERE boxID =:boxID""
+	result = conn.execute(sql,{""boxID"":boxID}).fetchall()
+	for row in result:
+		print(row[0])",设置SQL语句，内容是：通过$boxID$查询boxes表中的LastUpdated数据，通过$conn$执行SQL查询所有数据。for循环遍历查询结果并打印查询结果的第0个元素。,Set up an SQL statement: Query the LastUpdated data in the boxes table by $boxID$ and execute SQL to query all data via $conn$. For loop iterates through the query results and prints the 0th element of the query results.
+11223,"import pandas as pd
+from flask import jsonify
+def tell_data(conn,data_year):
+	try:
+		sql_select_Query = ""select * from vw_muertes_estado where data_year=:data_year""
+		res=conn.execute(sql_select_Query,{""data_year"":data_year}).fetchall()
+		result_df = pd.DataFrame(res)
+		df = result_df.to_dict(orient='records')
+		return jsonify(df)
+	except Exception as e:
+		print(str(e))
+	finally:
+		conn.close()",尝试设置SQL（根据$data_year$获取vw_muertes_estado表中的所有列）并通过$conn$执行获取所有数据，然后将查询后的结果存储为DataFrame格式，之后以'records'作为orient参数把查询结果转换成字典类型，最后使用jsonify处理字典内容并返回，如果执行出现异常则打印异常的字符串，最终确保$conn$关闭。,"Try to set up SQL (get all columns in vw_muertes_estado based on $data_year$) and get all the data by $conn$ execution. Then store the query result as DataFrame format. After that convert the query result to dictionary type with 'records' as orient parameter. Finally use jsonify to  process the dictionary content and return. If there is an exception in the execution, print the exception string and finally make sure that $conn$ is closed."
+13344,"import sqlalchemy
+def get_page(connection_string,schema):
+	if schema=='':
+		raise Exception(""fail"")
+	engine = sqlalchemy.create_engine(connection_string)
+	with engine.connect() as conn:
+		sqlString = ""SELECT * FROM pg_tables WHERE schemaname=:{}"".format(schema)
+		ret = conn.execute(sqlString).fetchall()
+		return ret","如果$schema$为空，引发执行Exception异常，参数为""fail""，否则通过$connection_string$获取数据库引擎。使用with语句建立连接。使用format字符串匹配方法设定sql语句（根据schemaname为$schema$查询pg_tables表中所有列），执行SQL语句，并获取所有数据，将查询结果返回。","If $schema$ is empty, throw and execute an Exception, whose parameter is ""fail""; otherwise, obtain the database engine through $connection_string$. Use the with statement to establish a connection. Use the format string matching method to set the sql statement (query all columns in the 'pg_tables' table based on the condition that schemaname is $schema$), execute the SQL statement, get all the data, and return the query results."
+11099,"def basic_fixture(conn,plan):
+	try:
+		sponsor=conn.execute(""SELECT sponsor FROM user WHERE plan=:plan"",{""plan"":plan}).fetchall()
+		return sponsor
+	finally:
+		conn.close()",尝试性使用$conn$执行SQL（根据$plan$查询user中的sponsor）并获取所有数据，返回查询结果。最终确保连接关闭。,"Try to use $conn$ to execute SQL (query sponsor in user based on $plan$) and get all the data and return the query results. Finally, make sure the connection is closed."
+13653,"from sqlalchemy import create_engine
+def test9(oracle,name):
+	engine = create_engine(oracle)
+	with engine.begin() as conn:
+		res = conn.execute(""select team_name_abbr from team where name = :name"",{""name"":name}).fetchone()
+	print(res[0])",使用$oracle$创建数据库引擎。使用with语句开始一次连接，并使用连接执行SQL（根据$name$查询team表中的team_name_abbr信息）并获取第一条数据。打印查询结果中第0号元素。,"Creating a database engine using $oracle$. Start a connection with the with statement, and use the connection to execute the SQL (querying the team_name_abbr in the team based on $name$) and get the first data. Print element 0 in the query result."
+13162,"def initiateLinkSearch(db,link):
+	s = db.execute(""select book from tableh where linkValue =:link"",{""link"":link})
+	links = s.fetchall()
+	if(len(links) != 0):
+		return links",使用$db$执行SQL（根据linkValue为$link$获取tableh表中的book列）并获取所有数据，如果查询结果的长度不为0，则返回查询结果,"Execute the SQL using $db$ (get the book column in the tableh where linkValue is $link$) and get all the data, return the query results if the length of the query results is not 0."
+11434,"def testBulk(conn, firstname):
+	sql = ""SELECT lastname FROM User WHERE firstname =: firstname""
+	results = conn.execute(sql,{""firstname"":firstname}).fetchall()
+	assert results != []
+	return results","设置sql（根据$firstname$查询User表中lastname列）,使用$conn$执行SQL并获取所有查询结果，设置断言判断查询结果是否为空，并返回查询结果。","Set SQL (query the lastname column in the User table based on $firstname$), use $conn$ to execute SQL and get all the query results. Set assertion to determine whether the query results are empty, and return the query results."
+13996,"def get_code_by_date(conn, date):
+	sql_data = ""SELECT * FROM data WHERE date =: date""
+	records = conn.execute(sql_data,{""date"":date}).fetchall()
+	return records[0]",将SQL语句设置为：根据$date$查询data表中的所有列，使用$conn$执行SQL获取所有数据，返回执行结果的第0个元素。,"Set the SQL statement: Query all the columns in the data table according to $date$, use $conn$ to execute SQL to get all the data, and return the 0th element of the execution result."
+11238,"from flask import render_template
+def login(username,conn):
+	if conn.execute(""SELECT * FROM users WHERE username=:username"", {""username"": username}).rowcount == 0:
+		return render_template(""message_layout.html"",message=""Not Registered!"")
+	else:
+		return render_template(""message_layout.html"",message=""Succesfuly Logged In!"")","如果使用$conn$执行SQL（根据$username$获取users中的所有列）并获取行数的结果为0，则返回渲染后的""message_layout.html""，传入message参数为""Not Registered!""，否则然后渲染后的""message_layout.html""，传入message参数为""Succesfuly Logged In!""","If use $conn$ to execute SQL (get all the columns in users based on $username$) and the result of the number of rows is 0, return rendered ""message_layout.html"" and pass ""Not Registered"" into the message parameter. Otherwise return rendered ""message_layout.html"", and pass ""Succesfuly Logged In!"" into the message parameter. "
+14187,"def process_item(conn, company):
+	sql= ""select salary from jobs where company=:company""
+	data= conn.execute(sql,{""company"":company}).fetchall()
+	return data",设置SQL，其内容为：根据$company$获取jobs表中的salary数据，通过$conn$执行SQL获取所有数据，返回获取的所有数据。,"Set the SQL with the following content: Get the salary data in the jobs table based on $company$, execute the SQL to get all the data via $conn$, and return all the obtained data."
+13131,"def test_sql_open_close(conn,id):
+	sql=""SELECT * FROM test_frame3_legacy where id=:id""
+	res=conn.execute(sql,{""id"":id}).fetchall()
+	conn.close()
+	return res",使用$conn$执行SQL（根据$id$获取test_frame3_legacy表中的所有列）并获取所有数据，然后关闭$conn$连接，最后返回查询结果,"Execute the SQL (get all the columns in the test_frame3_legacy where id is $id$) with $conn$, get all the data, then close the $conn$ connection, and return the query results."
+14142,"from sqlalchemy import create_engine
+def getitems(db_name, password):
+	engine = create_engine(db_name)
+	connection = engine.connect()
+	items = connection.execute(""select user from db_name where password=:password"", {""password"":password}).fetchone()
+	return items",通过$db_name$创建数据库引擎并建立连接。执行SQL：根据$password$查询db_name表中的user信息，并获取第一条信息，返回所获取的信息。,"Create a database engine and establish a connection via $db_name$. Execute SQL: Query the user information in the db_name table based on $password$, get the first piece of information, and return the obtained information."
+11533,"def query_favorites(conn, name, city):
+	try:
+		query = conn.execute(""SELECT * FROM favorites WHERE name = :name AND city = :city"", {""name"": name,""city"": city}).fetchall()
+		return [dict(row) for row in query]
+	except:
+		print(""Error"")","通过$conn$执行SQL语句（根据$name$和$city$查询favorites表中的所有列）并获取所有数据，将查询结果每一项转化为dict存储为list并返回。若出现异常，则打印""Error""。","Execute the SQL statement (query all columns in the favorites table based on $name$ and $city$) through $conn$, get all the data and convert each item into dict and store it as list and return it. If there is an exception, then print ""Error""."
+14258,"def stations(engine):
+	conn = engine.connect()
+	results = conn.execute(""SELECT max(price) FROM crypto"").fetchone()
+	items = [dict(r) for r in results]
+	return items",通过$engine$连接数据库。执行SQL：查询crypto表中的最大price，并获取第一条数据。将查询结果每一项转化为dict存储为list并返回。,"Connect to the database through $engine$. Execute SQL: Query the maximum 'price' in the crypto table and get the first piece of data. Convert each item of the query result to dict, store as list and return."
+13767,"from sqlalchemy.sql import select
+def join_data(conn,Line,line_cd):
+	s = select(Line).where(Line.c.line_cd == line_cd)
+	moe = conn.execute(s).fetchall()
+	known_line_cd = []
+	for i in moe:
+		known_line_cd.append(i)
+	return known_line_cd",根据python表达式设置SQL：（根据$line_cd$查询$Line$表中所有列）。通过$conn$执行SQL并获取所有数据，使用for循环遍历每一项查询结果，并存储为list，最后返回这个list。,"Set SQL based on the python expression (query all columns in the $Line$ table based on $line_cd$). Execute SQL through $conn$, get all the data, use for loop to traverse each query result, store it as list, and finally return the list."
+11295,"def write_local_db(conn,rawdata):
+	query = ""SELECT * FROM drinkers WHERE rawdata=:rawdata""
+	try:
+		rs = conn.execute(query, {""rawdata"": rawdata}).fetchall()
+		return rs
+	except Exception as e:
+		return False",设置SQL(根据$rawdata$获取drinkers中的所有列)，尝试使用$conn$执行并获取所有数据，再返回查询结果，如果执行时出现异常，则返回False,"Set up SQL (get all columns in 'drinkers' based on $rawdata$), try to execute with $conn$ and get all the data. Return the query result, and if an exception occurs during execution, return False."
+11038,"from flask import render_template
+def profile(db,id):
+	user = db.execute(""SELECT * FROM userss WHERE id=:id"",{""id"":id}).fetchone()
+	users = db.execute(""SELECT * FROM userss;"").fetchall()
+	return render_template(""profile.html"", user = user, users = users)","step1: 利用$db$执行SQL（根据$id$查询userss中的所有列）并获取第一条数据。step2: 利用$db$执行SQL（查询userss中的所有列）并获取所有数据。将step1的查询结果传入user参数，step2的查询结果传入users参数，返回并渲染""profile.html""页面。","Step 1: Use $db$ to execute SQL (query all columns in userss based on $id$) and get the first piece of data. Setp 2: Use $db$ to execute SQL (query all columns in userss) and get all the data. Pass the query result of step 1 to the user parameter, and the query result of step 2 to the users parameter, return and render the ""profile.html"" page."
+11430,"import sqlalchemy
+def test0_db(DB_DOMAIN, value):
+	create_db_engine = sqlalchemy.create_engine(DB_DOMAIN, echo=False)
+	conn = create_db_engine.connect()
+	sql = ""SELECT * FROM test0 WHERE value =: value""
+	results = conn.execute(sql,{""value"":value}).fetchall()
+	return results",通过$DB_DOMAIN$获取数据库引擎，参数echo为False，并建立连接。设置SQL语句（根据$value$查询test0表中所有列），执行sql并获取所有数据，将查询结果返回。,"Get the database engine by $DB_DOMAIN$ with 'echo' parameter as False and establish a connection. Set SQL statement (query all columns in test0 table based on $value$), execute sql, get all the data, and return the query result."
+13172,"def test_to_sql(db, engine):
+	rows =db.execute('select type from table where engine=:engine',{""engine"":engine}).fetchall()
+	return rows",使用$db$执行SQL（根据$engine$获取table表中的type列）并获取所有数据，最后返回查询结果,"Execute the SQL (get the type column in the table where engine is $engine$) using $db$, get all the data, and return the query results."
+11462,"from flask import render_template
+def flight(conn, id):
+	flight_sql = ""SELECT * FROM flights WHERE id =: id""
+	flight = conn.execute(flight_sql,{""id"":id}).fetchone()
+	if flight is None:
+		return render_template(""error.html"", message=""No such flight."")
+	else:
+		return render_template(""flight.html"", flight=flight)","设置sql（根据$id$查询flights表中全部信息）,使用$conn$执行SQL并获取第一条数据，如果查询结果为空，返回渲染后的""error.html""页面，message为""No such flight.""。否则返回渲染后的""flight.html"", 参数flight为查询结果。","Set up SQL (query all the information in the flights table based on $id$), use $conn$ to execute SQL and get the first piece of data. If the query result is empty, return the rendered ""error.html"" page with 'message' as ""No such flight."" Otherwise, return the rendered ""flight.html"", and the flight parameter is the query result."
+14014,"def query_caching(engine):
+	with engine.begin() as conn:
+		res = conn.execute(""select customer_name, customer_des from customer"").fetchall()
+		return res",使用with语句根据$engine$连接数据库。执行SQL语句（查询customer表中的全部customer_name和customer_des信息），返回查询结果。,Use the with statement to connect to the database according to $engine$. Execute the SQL statement (query all customer_name and customer_des information in the customer table) and return the query result.
+13151,"def users(conn,dni):
+	try:
+		cur=conn.execute(""SELECT id, dni FROM users where id=:dni"",{""dni"":dni}).fetchone()
+		return cur
+	finally:
+		conn.close()",尝试使用$conn$执行SQL（根据id为$dni$获取users表中的id和dni两列）并获取第一条数据，然后返回查询结果，最终确保$conn$连接关闭,"Try to use $conn$ to execute SQL (get the ID and DNI columns in the users where id is $dni$) and get the first data, then return the query results and finally make sure the $conn$ connection is closed."
+13169,"def where_clause_fn(conn,id):
+	stmt = ""select id from name where staff_position.id =: id, name.id =: id))""
+	res=conn.execute(stmt,{""id"":id}).fetchone()
+	return res",使用$conn$执行SQL（根据staff_position.id为$id$和name.id为$id$获取name表中的id列）并获取第一条数据，最后返回查询结果,"Execute the SQL with $conn$ (get the id column in the name where staff_position.id is $id$ and name.id is $id $) and get the first data, then return the query results."
+14263,"def update_service_rows_by_ids(conn, ServiceV4, pk_id):
+	try:
+		model_obj = conn.query(ServiceV4).filter(ServiceV4.id == pk_id).fetchall()
+		return model_obj
+	except Exception as e:
+		raise e",尝试使用Python表达式的方式，通过$conn$连接执行SQL语句：查询$ServiceV4$表中id为$pk_id$的所有内容，返回查询结果。如果出现Exception，使用raise根据错误信息抛出异常。,"Try to use the Python expression to execute the SQL statement through the $conn$ connection: Query all the contents of the $ServiceV4$ table where id is $pk_id$ and return the query results. If there is an Exception, use 'raise' to throw an exception based on the error message."
+11416,"def filter_beers(engine, max_price):
+	with engine.connect() as con:
+		query = ""SELECT * FROM MasterSells WHERE Price =: max_price""
+		rs = con.execute(query,{""max_price"":max_price}).fetchall()
+		results = [dict(row) for row in rs]
+		for r in results:
+			r['Price'] = float(r['Price'])
+		return results","使用with语句根据$engine$连接数据库。设置SQL（根据Price为$max_price$查询MasterSells表中所有列），执行sql并获取所有查询结果，使用for循环将查询结果的每一条转化为dict,并以list存储。使用for循环将查询结果中'Price'字段转化为float格式。最后返回这个list。","Use 'with' statement to connect to the database based on $engine$. Set up SQL (query all columns in the MasterSells table based on Price $max_price$), execute SQL and get all the query results. Use for loop to convert each query result to dict, and store in list. Use for loop to convert the 'Price' field in the query result to float format. Finally, return the list."
+11646,"def get_class(conn,id):
+	row = conn.execute(""select the_class from context where id=:id"",{""id"":id}).fetchone()
+	return row if row else None",使用$conn$执行SQL（根据$id$获取context表中的the_class列）并获取第一条数据，如果查询结果为真，则返回查询结果，否则返回None,"Use $conn$ to execute SQL (get the 'the_class' column in the context table according to $id$) and get the first piece of data. If the query result is true, return the query result; otherwise, return None."
+13839,"from flask import render_template, request, redirect, url_for
+def house(conn, id):
+	if request.method == 'POST':
+		cursor = conn.cursor()
+		rs = cursor.execute(""SELECT owner FROM houses WHERE id =: id"", {""id"": id}).fetchone()
+		cursor.close()
+		return render_template(""house.html"", owner = rs)
+	else:
+		return redirect(url_for('homepage'))","如果request模块发送请求的方式为post，使用$conn$创建游标对象，通过游标执行SQL语句：根据$id$查询houses表中的第一条owner数据，关闭游标，渲染并返回""house.html""，其中owner参数为查询结果；否则使用redirect返回url_for拼接出的'homepage'。","If the request module sends request as post, use $conn$ to create cursor object, execute SQL statement by cursor: Query the first piece of owner data in the houses table based on $id$. Close the cursor, render and return ""house.html"", where the owner parameter is the query result; otherwise use redirect to return the 'homepage' spliced by url_for."
+11580,"from flask import render_template
+def index(conn, id):
+	info = conn.execute(""SELECT * FROM flights WHERE id = :id"", {""id"": id}).fetchall()
+	return render_template(""index.html"",flights=info)","使用$conn$执行SQL语句（根据$id$查询flights表中的所有列）并获取所有数据，渲染并返回""index.html""，其中flights参数为查询结果。","Use $conn$ to execute the SQL statement (query all the columns in the flights table based on $id$), get all the data, render and return ""index.html"", where the flights parameter is the query result."
+11012,"from sqlalchemy import create_engine
+def winlotto_sel(db_address,win_id):
+	engine = create_engine(db_address, echo=False)
+	connector = engine.connect()
+	winlotto = connector.execute(""SELECT * FROM winlotto WHERE win_id=:win_id"",{""win_id"":win_id}).fetchall()
+	connector.close()
+	return winlotto",根据$db_address$创建数据库引擎，并设置echo参数为False。根据引擎获取连接。执行SQL（根据$win_id$查询winlotto表中所有列）并获取查询结果。关闭连接并返回查询结果。,Establish database engine based on $db_address$ and set echo parameter to False. Get a connection based on engine. Execute SQL (query all columns in winlotto table based on $win_id$) and get query results. Close the link and return the query results.
+11114,"def test_flush(db,id_tu):
+	c = db.connect()
+	flush = c.execute(""SELECT inf FROM users WHERE id_tu=:id_tu"",{""id_tu"":id_tu}).fetchall()
+	return flush","通过$db$连接数据库。执行SQL语句（根据$id_tu$获取users表中的inf）,并返回所有的查询结果。",Connect to the database with $db$. Execute the SQL statement(query the inf in the users where based on $id_tu$) and return all query results.
+13600,"def test_rollback_deadlock(testing,user_id):
+	conn1 = testing.connect()
+	res=conn1.execute(""select * from deadlock_users where user_id=:user_id"",{""user_id"":user_id}).fetchall()
+	conn1.close()
+	return res",利用$testing$建立连接，执行SQL（根据$user_id$查询deadlock_users表中所有列），并获取所有查询结果，关闭连接，将查询结果返回。,"Use $testing$ to establish a connection, execute SQL (query all columns in the deadlock_users table based on $user_id$), get all the query results, close the connection, and return the query results."
+14037,"from flask import render_template
+def index(conn):
+	flights = conn.execute(""SELECT * FROM flights"").fetchall()
+	return render_template(""index.html"", flights=flights)","使用$conn$查询flights表中的所有列，并获取全部数据，渲染并返回""index.html""，其中flight参数为查询结果。","Use $conn$ to query all the columns in the flights table, get all the data, render and return ""index.html"", where the flight parameter is the query result."
+11166,"def get_contacty_by_id(conn,Contact,id):
+	values = conn.query(Contact).filter(Contact.id == id).all()
+	print(values)",通过$conn$连接，使用ORM方式执行SQL语句（根据$id$获取$Contact$中的全部数据），打印所有的查询结果。,Execute the SQL statement (get all the data in $Contact$ where id is $id$) using ORM over the $conn$ connection to print all the query results.
+14174,"from sqlalchemy.sql import select
+def test_append_correlation(conn, table, q):
+	inner = select([table.c.p]).where(table.c.q == q)
+	res = conn.execute(inner).fetchall()
+	return res",使用Python表达式的方式设置SQL语句(根据$q$获取$table$表中的p)，通过$conn$执行SQL获取所有数据并返回。,"Use Python expression to set up SQL statement (get p in $table$ table based on $q$), execute SQL by $conn$ to get all the data and return."
+11599,"def get_data(engine, type):
+	with engine.connect() as con:
+		rs = con.execute(""SELECT COUNT(*) FROM Bills WHERE type = :type"", {""type"": type}).fetchall()
+		results = [dict(row) for row in rs]
+		return results",使用with语句根据$engine$连接数据库。执行SQL语句（根据$type$获取Bills中的所有列的统计值）并获取所有数据，将查询结果每一项转化为dict存储为list并返回。,"Use the with statement to connect the database according to $engine$. Execute the SQL statement (get the statistics of all the columns in the Bills table based on $type$), get all the data, convert each item of the query result to dict, store it as list and return."
+13921,"from sqlalchemy.sql import select
+def ship_it(conn, cookies, quantity):
+	try:
+		sql = select([cookies.c.cookie_id]).where(cookies.c.quantity == quantity)
+		cookies_to_ship = conn.execute(sql).fetchall()
+		return cookies_to_ship
+	except Exception as e:
+		print(e)",尝试使用Python表达式的方式设置SQL语句（通过$quantity$查询$cookies$表中的cookie_id），使用$conn$连接执行SQL获取所有数据，返回获取到的数据。如果出现Exception，打印异常信息。,"Try to set the SQL statement with the Python expression (query the cookie_id in the $cookies$ table through $quantity$), use the $conn$ connection to execute SQL, get all the data, and return the obtained data. If there is an Exception, print exception message."
+13292,"def search_name(conn):
+	cities = conn.execute(""SELECT name FROM Campground"").fetchall()
+	for c in cities:
+		print(c)",使用$conn$执行SQL（获取Campground表中name列）获取所有数据并使用for循环打印查询结果中的每一项,Use $conn$ to execute SQL (get the name column in the Campground) to get all the data and print each item in the query result using the for loop.
+13541,"import csv
+def read_csv(db, input_file):
+	with open(input_file) as file:
+		reader = csv.reader(file)
+		next(reader)
+		for title in reader:
+			res=db.execute(""select * from books where title=:title"",{ ""title"":title}).fetchall()
+			print(res)",使用with语句打开$input_file$文件，读取文件并执行next命令，遍历文件中的title，根据$db$连接数据库。执行SQL（根据title查询books表中所有列），获取所有查询结果并打印。,"Open the $input_file$ file with the with statement, read the file, execute the 'next' command, traverse the title in the file and connect the database according to $db$. Execute SQL (query all columns in the books table according to title), get all the query results and print them."
+14067,"def main(conn):
+	flights = conn.execute(""SELECT id FROM flights"").fetchall()
+	for flight in flights:
+		print(flight)
+	assert len(flights) > 0",使用$conn$执行SQL语句（查询flights表中的所有id数据），for循环遍历所有查询结果并打印，设置断言判断返回结果的长度大于0。,"Use $conn$ to execute the SQL statement (query all id data in the flights table), use for loop traversal to query the results and print, set assertions to determine that the length of the returned result is greater than 0."
+11102,"def test_reflect_alt_owner_synonyms(conn,parent_id):
+	try:
+		texts = conn.execute(""SELECT id FROM localtable WHERE parent_id=:parent_id"",{""parent_id"":parent_id}).fetchall()
+		return texts
+	finally:
+		conn.close()","尝试性使用$conn$执行SQL（根据$parent_id$查询localtable表中的所有id）,返回所有结果。最终确保$conn$关闭。",Try to use $conn$ to execute SQL (query all ids in the localtable where the id of parent is $parent_id$) and return all results. Finally make sure $conn$ is off.
+13300,"def test_numerics(conn, intcol):
+	print(intcol)
+	sql = ""SELECT numericcol FROM t1 WHERE intcol =: intcol""
+	results = conn.execute(sql,{""intcol"":intcol}).fetchall()
+	return results","打印$intcol$, 使用$conn$执行SQL（根据$intcol$获取t1表中的numericcol列）获取所有数据并返回。","Print $intcol$, execute SQL with $conn$ (get the numericcol column in t1 where intcol is $intcol$) , get all the data and return."
+13644,"def get_keywords(session,keywords):
+	sql = ""select id from item_info where name = :keywords""
+	ret = session.execute(sql,{""keywords"":keywords}).fetchall()
+	session.close()
+	return [dict(i) for i in ret]",设置SQL：查询当name为$keywords$时item_info表中的id信息。使用$session$执行SQL并获取所有数据。关闭$session$并将查询结果中每一项转化为dict返回。,Set SQL: query the id information in the item_info table where name is $keywords$. Execute the SQL using $session$ and get all the data. Close $session$ and return each item in the query result as dict.
+13857,"from sqlalchemy import create_engine
+from sqlalchemy.orm.session import sessionmaker
+def get_all_table_names(connect_str, schema):
+	engine = create_engine(connect_str, echo=False)
+	session = sessionmaker(bind=engine)
+	ss = session()
+	query = ""SELECT names FROM tables WHERE schema = :schema""
+	rs = ss.execute(query, {""schema"": schema}).fetchall()
+	return [dict(row) for row in rs]",运用$connect_str$获取数据库引擎，其中echo参数为False。使用sessionmaker()创建一个配置过的Session类并绑定数据库引擎。实例化Session，然后设置SQL语句：通过$schema$查询tables中的names数据，执行SQL获取所有数据。将查询结果每一项转化为dict存储为list并返回。,"Use $connect_str$ to get the database engine, where the echo parameter is False. Use sessionmaker() to create a configured Session class and bind the database engine. Instantiate Session, then set SQL statement: Query names data in tables through $schema$, execute SQL to get all the data. Convert each item of the query results into dict and store it as list and return it."
+13676,"from sqlalchemy import create_engine
+def main(proxy, ip, id, location):
+	engine = create_engine(proxy,echo=False)
+	conn = engine.connect()
+	sql = ""select hostname from Table where ip=:ip and id=:id and location=:location""
+	try:
+		result = conn.execute(sql,{""ip"":ip,""id"":id,""location"":location}).fetchone()
+		return result
+	except Exception as e:
+		print(e)","根据$proxy$创建数据库引擎，并设置echo参数为False。使用引擎创建连接。设置SQL（根据$ip$, $id$和$location$查询Table中的hostname）。尝试性使用$conn$执行SQL并获取第一条数据，并返回查询结果。如果出现异常，则打印具体异常的信息。","Create the database engine from $proxy$ and set the echo parameter to False. Create a connection using the engine. Set the SQL (queries for the hostname in the Table where IP is $ip$, id is $id$, and location is $location$). Try Out SQL with $conn$ and get the first data and return the query results. If an exception occurs, the information for the specific exception is printed."
+13662,"import csv
+def get_year(db):
+	f = open(""books.csv"")
+	reader = csv.reader(f)
+	res_list=[]
+	for isbn in reader:
+		res = db.execute(""SELECT year FROM books WHERE isbn=:isbn"",{""isbn"":isbn}).fetchone()
+		res_list.append(res)
+	return res_list","打开""books.csv""文件，并使用reader处理文件。对于文件中的每一项数据，使用$db$执行SQL（当isbn等于文件中的数据时查询books表中的year），并将获取第一条查询结果存入list中。最后返回整体的list。","Open the""books.csv"" and use reader to process the file. For each item of data in the file, execute the SQL using $db$ (query the year in the books table where isbn is the data in the file) and store the first query result in the list. Finally, return the whole list."
+11253,"def initialize(engine,name):
+	conn = engine.connect()
+	try:
+		res=conn.execute(""select * from database where name=:name"",{""name"":name}).fetchall()
+		return res
+	except Exception as ex:
+		print(ex)
+	finally:
+		conn.close()",通过$engine$连接数据库，尝试执行SQL(根据$name$获取database中的所有列)并获取所有数据然后返回查询结果，如果执行时出现异常，则打印异常，最终确保连接关闭,"Connect to the database via $engine$, try to execute the SQL (get all the columns in the database based on $name$), get all the data and then return the query result.If an exception occurs during the execution, print the exception print and finally make sure the connection is closed."
+14242,"def query(conn, pwd):
+	res = conn.execute(""select fname from tuser where pwd:pwd"",{""pwd"":pwd}).fetchall()
+	print(res)
+	if len(res) > 0:
+		return res",使用$conn$查询tuser表中pwd为$pwd$的所有fname，打印查询结果，如果查询结果的长度大于0，返回查询结果。,"Use $conn$ to query all the fname in the tuser table whose pwd is $pwd$, print the query result, and return the query result if the length of the query result is greater than 0."
+13934,"from flask import render_template, request
+def book_info(conn,user,isbn):
+	if request.method==""POST"":
+		try:
+			review = conn.execute(""SELECT user_name FROM Reviews where user_name=:user AND isbn=:isbn"",{""user"":user,""isbn"":isbn}).fetchone()
+			return render_template(""bookinfo.html"", review=review)
+		except:
+			return False","如果request模块发送请求的方式为POST，尝试性使用$conn$连接执行SQL语句（根据$user$和$isbn$获取Reviews表中的第一条user_name），渲染并返回""bookinfo.html""，其中review参数为获取的数据。如果出现异常，返回False。","If the request module sends the request in a POST method, try to use the $conn$ connection to execute the SQL statement (get the first user_name in the Reviews table based on $user$ and $isbn$), render and return ""bookinfo.html"", where the review parameter is the obtained data. If an exception occurs, return False."
+11312,"def fetch_fund_holdings(conn,code,date):
+	cur = conn.execute(""select nlast from stock_fund_holdings where code = :code and date = :date"",{""code"":code,""date"":date}).fetchall()
+	conn.commit()
+	print(cur)",使用$conn$执行SQL（根据$code$和$date$查询stock_fund_holdings表中nlast列）并获取所有数据，使用$conn$提交。并将查询结果输出。,"Use $conn$ to execute SQL (query the nlast column in the stock_fund_holdings table based on $code$ and $date$), get all the data, and use $conn$ to submit it. And output the query results."
+13155,"def databaseOutput(conn,table,count):
+	tableOutput = conn.execute(table.select().limit(count)).fetchall()
+	print(tableOutput)
+	return tableOutput",根据python表达式的方式，使用$conn$执行SQL（获取$table$表中$count$限制计数条数的数据）并获取所有数据，然后打印查询结果，最后返回查询结果,"According to the python expression, execute SQL with $conn$ (Get the data for the count limit of $count$ in the $table$) and get all the data, then print the query results and return the query results."
+11432,"def setOrderStatusPaid(conn, customerid):
+	query = ""SELECT status FROM orders WHERE customerid = ""+ str(customerid)
+	status = conn.execute(query,{""customerid"":customerid}).fetchall()
+	return status","设置sql（根据转为字符串的$customerid$查询orders表中status列）,使用$conn$执行SQL并获取所有查询结果，返回执行语句的结果。","Set SQL (query the status column in 'orders' table based on the $customerid$ which is converted to a string), use $conn$ to execute the SQL and get all the query results, and return the results of the execution statement."
+13197,"def getNumberUsersWithUsername(conn,username):
+	db_result = conn.execute(""SELECT count(customerid) FROM customers WHERE username =:username"",{""username"":username}).fetchall()
+	res= [item for item in db_result]
+	return res",使用$conn$执行SQL（根据$username$获取customers表中的被计数方法处理过的customerid列）并获取所有数据，然后使用for循环对查询结果的每一项转化为list类型，最后返回list内容,"Execute the SQL (get the customerid column in the customers table processed by the count method where the name of user is $username$) with $conn$, get all the data, then use the for loop to convert each item of the query result to a list type, and finally return the list content."
+11678,"def get_userid(engine,lid):
+	conn = engine.connect()
+	uids = conn.execute(""select UID from USER_LIST where LID=lid"",{""lid"":lid}).fetchall()
+	conn.close()
+	return uids",利用$engine$连接数据库并执行SQL（获取USER_LIST表中LID为$lid$的UID列）并获取所有数据，然后关闭连接，最后返回查询结果,"Use $engine$ to connect the database and execute SQL (get the UID column in the USER_LIST table whose LID is $lid$), get all the data, close the connection, and finally return the query result."
+11141,"def openDB(connection,metadata):
+	sql = ""SELECT autoload FROM devices WHERE metadata=""+metadata
+	inforauto = connection.execute(sql).fetchall()
+	return inforauto",设置SQL（通过$metadata$查询$devices$中的所有autoload），使用$connection$连接执行SQL并获取数据。,"Set the SQL (query all autoload in $devices$ where metadata is $metadata$) , execute the SQL using the $connection$ and fetch the data."
+11167,"from flask import render_template,request
+def register(conn,login_state):
+	if request.method == ""GET"":
+		return render_template(""register.html"")
+	else: 
+		information = conn.execute(""SELECT * FROM users WHERE login_state=:login_state"",{""login_state"":login_state}).fetchone()
+		return information","如果request模块发送请求的方式为GET，渲染并返回""register.html""。否则通过$conn$连接执行SQL（通过$login_state$查询users中的所有列）并获取第一条数据，返回获取的数据。","If the request module sends the request as GET, render and return ""register.html"". Otherwise execute the SQL (query all columns in users where the state of login is $login_state$) over the $conn$ connection and get the first data, return the obtained data."
+13537,"from flask import render_template
+def login(db,id_user):
+	user = db.execute(""SELECT * FROM usuarios WHERE id_user=:id_user"",{""id_user"":id_user}).fetchone()
+	user_name= user[0]
+	return render_template(""main.html"", name = user_name)","利用$db$执行SQL（根据$id_user$查询usuarios表中所有列），并获取第一行数据，返回渲染后的""main.html""，参数name设置为查询结果的第0个元素。","Execute SQL with $db$ (query all columns in the usuarios table according to $id_user$), get the first row of data, return the rendered ""main.html"", and set the parameter name to the 0th element of the query result."
+11126,"def empty_query(conn,time_oj):
+	try:
+		infor = conn.execute(""SELECT * FROM photos WHERE time_oj=:time_oj"",{""time_oj"":time_oj}).fetchall()
+		return [item[0] for item in infor]
+	except Exception as e:
+		print(e)",尝试使用$conn$连接执行SQL语句：通过$time_oj$查询photos中的所有列，并获取所有数据。将查询结果每一项的第0个元素存储为list并返回。如果执行时出现Exception异常，则打印异常信息。,"Try to execute the SQL statement using the $conn$ connection: query all the columns in the photos where time_oj is $time_oj$ and get all the data. Store the 0th element of each item of the query result as a list and return it. If an Exception occurs during execution, the Exception information is printed."
+13065,"def test_close2(testing):
+	connection = testing.connect()
+	users_value = connection.execute(""SELECT * FROM query_users"").fetchall()
+	connection.close()
+	return users_value",使用$testing$获取数据库连接。使用连接执行SQL（查询query_users表中的所有列）并获取所有数据。关闭连接并返回查询结果。,Use $testing$ to get the database connection. Use the connection to execute SQL (query all columns in the query_users table) and get all the data. Close the connection and return the query results.
+11073,"from sqlalchemy.sql import select
+def get_from_insertion(conn,queue_table,insertion_time):
+	s = select(queue_table).where(queue_table.c.insertion_time == insertion_time)
+	return conn.execute(s).fetchall()",使用python表达式设置SQL（根据$insertion_time$查询$queue_table$表中的所有信息）。返回使用$conn$执行后查询的所有数据。,Use the python expression to set up SQL (query all the information in the $queue_table$ table based on $insertion_time$). Returns all the data of the query executed with $conn$.
+13331,"def query_page(engine,transactionID):
+	with engine.connect() as con:
+		rs = con.execute(""SELECT drinker FROM Transactions WHERE transactionID=:transactionID"",{""transactionID"":transactionID}).fetchall()
+		results = [dict(row) for row in rs]
+		return results",使用with语句根据$engine$连接数据库。执行SQL（根据$transactionID$查询Transactions表中drinker列），并获取所有查询结果，将查询结果每一项转化为dict存储为list并返回。,"Use the with statement to connect the database according to $engine$. Execute SQL (query the drinker column in the Transactions table according to $transactionID$), get all the query results, convert each item of the query result to dict, store it as list, and return."
+11512,"def test(conn, id):
+	results = conn.execute(""SELECT * FROM secrets WHERE id = :id"", {""id"": id}).fetchall()
+	secret_list = []
+	for row in results:
+		secret_list.append(str(row[0]))
+	return results",通过$conn$执行SQL（根据$id$查询secrets表中的所有列）并获取所有数据，使用for循环遍历查询结果，将查询结果中每一项的第0个元素转化成字符串形式并存储到list中。返回所有的查询结果。,"Execute SQL through $conn$ (query all columns in secrets table based on $id$) and get all data. Use for loop iterate the query results, convert the 0th element of each item in the query results to a string and store it in list. Return all the query results."
+13591,"from flask import render_template
+def search(conn,title):
+	rows = conn.execute(""SELECT isbn, author FROM books WHERE title=:title "",{""title"": title})
+	if rows.rowcount == 0:
+		return render_template(""error.html"")
+	books = rows.fetchall()
+	return render_template(""results.html"", books=books)","利用$conn$执行SQL（根据$title$查询books表中isbn, author列），如果执行结果的rowcount字段为0，返回渲染后的""error.html""页面。获取执行语句的所有结果，返回渲染后的""results.html""页面，参数books为获取到的数据。","Execute SQL with $conn$ (query the isbn and author columns in the books table according to $title$) and return the rendered ""error.html"" page if the rowcount field of the execution result is 0. Get all the results of the execution statement and return the rendered ""results.html"" page, where the parameter books is the obtained data."
+13955,"def select_value(engine, value):
+	connection = engine.connect()
+	sql = ""SELECT * FROM tablename WHERE value =: value""
+	try:
+		result = connection.execute(sql,{""value"":value}).fetchall()
+		rows = [dict(row) for row in result]
+	except Exception as error:
+		raise error
+	finally:
+		connection.close()
+		engine.dispose()
+	return rows",使用$engine$连接数据库，设置SQL语句：根据$value$查询tablename表中的所有列。尝试性执行SQL语句获取所有数据，将查询结果每一项转化为dict存储为list。如果出现Exception，则使用raise根据错误信息抛出异常。最后关闭数据库连接并释放连接占用的资源。返回list内容。,"Connect the database with $engine$ and set the SQL statement: Query all columns in the tablename table based on $value$. Try to execute the SQL statement, get all the data, and convert each item of the query result into dict and store it into list. If an Exception occurs, use raise to throw an exception based on the error message. Finally, close the database connection and release the resources consumed by the connection. Return the list content."
+11402,"def viewdb(conn):
+	rows = conn.execute(""SELECT count(*) FROM collisions"").fetchall()
+	return ''.join(str(row) for row in rows)","利用$conn$执行SQL（查询collisions表中所有列的数量），并获取所有查询结果，使用for循环将查询结果的每一条转化为字符串,并以join连接。将得到的拼接字符串返回。",Use $conn$ to execute SQL (query the number of all columns in the collisions table) and get all the query results. Use for loop to convert each query result into a string and connect it with 'join'. Return the obtained concatenate string.
+13224,"def select_stock(conn, id):
+	sql = ""SELECT * FROM stock WHERE id =: id""
+	results = conn.execute(sql,{""id"":id}).fetchall()
+	for x in results:
+		print(x[0])
+	return results",使用$conn$执行SQL语句（根据$id$查询stock表中的所有列）并获取所有数据。使用for循环打印查询结果中每一项的第0个元素。,Execute the SQL statement (query all columns in the stock where id is $id$) using $conn$ and get all the data. Use the for loop to print the 0th element of each item in the query result.
+11045,"from flask import request
+def search(conn,author):
+	search_string = request.form.get(""search_string"")
+	if search_string:
+		books=conn.execute(""SELECT title FROM books_table WHERE author=:author"",{""author"":author}).fetchall()
+		print(books)
+		return books",在request中通过search_string获取信息。如果获取到数据，则使用$conn$执行SQL：根据$author$获取books_table表中的所有所title数据。打印查询结果并返回。,"Get information through search_string in request. If the data is obtained, use $conn$ to execute SQL: To get all the title data in the books_table based on $author$. Print the query results and return."
+11158,"def query_page(conn,session_hash):
+	s = ""SELECT user_id FROM ic_user_session WHERE session_hash=""+session_hash
+	res=conn.execute(s).fetchall()
+	return res",设置SQL的内容为通过$session_hash$查询$ic_user_session$中的所有user_id），使用$conn$执行SQL并返回获取的数据。,"Set the SQL to query all user_id in $ic_user_session$ where session_hash is $session_hash$) , execute the SQL with $conn$ and return the acquired data."
+11570,"def message_processor(conn, barcode):
+	result = conn.execute(""SELECT * FROM pay_newitem WHERE barcode = :barcode"", {""barcode"": barcode}).fetchall()
+	return """".join(result)","#使用$conn$连接执行SQL（通过$barcode$查询pay_newitem表中的所有列）并获取所有数据，用""""连接查询结果并返回。","#Use the $conn$ connection to execute SQL (query all columns in the pay_newitem table through $barcode$) and get all the data, use """" to connect the query results and return."
+13041,"from flask import request,render_template
+def register(conn,newID):
+	if request.method == ""POST"":
+		user = conn.execute(""SELECT * FROM register_users WHERE id=:id"", {""id"": newID}).fetchall()
+		return render_template(""register.html"", users=user)
+	return render_template(""register.html"")","如果request请求方式是POST，则使用$conn$执行SQL（查询当id等于$newID$时register_users表中的所有列）并获取所有数据，返回渲染后的""register.html""页面，将查询结果传给users参数。否则返回渲染后的""register.html""。","If the request method of quest is POST, use $conn$ to execute SQL (query all columns in the register_users table when id equals $newID$) and get all the data, return to the rendered ""register.html"" page, and pass the query result to the users parameter. Otherwise, return the rendered ""register.html""."
+11193,"def get_drinkers(engine,name,city):
+	with engine.connect() as conn:
+		Drink_data=conn.execute(""SELECT * FROM Drinkers WHERE name=:name AND city=:city"",{""name"":name,""city"":city}).fetchall()
+		return [dict(row) for row in Drink_data]",利用with语句根据$engine$连接数据库。执行SQL语句（根据$name$和$city$查询Drinkers表中所有列）获取所有数据，将查询结果每一项转化为dict存储为list并返回。,"Use the with statement to connect to the database with where engine is $engine$. Execute the SQL statement (query for all the columns in the Drinkers where name is $name$ and city is $city$) to get all the data, convert each query result item to dict, store it as a list, and return."
