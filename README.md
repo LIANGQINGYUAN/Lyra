@@ -29,6 +29,7 @@ The dataset used in our paper is under `lyra_dataset` folder.
 
 # Traing and Testing of Baseline
 
+## transformer
 **training**
 
 command: `python -m run train --param-path params.json`
@@ -43,6 +44,13 @@ In our experiments, we use the wandb to track the model training process. You ca
 command: `python -m run decode models/train_xxxxxxxx/model`
 
 - train_xxxxxxxx is the folder of trained model.
+
+## pre-trained model
+**training**
+command: `sh train_xxxx.sh`
+
+**testing**
+command: `sh test_xxxx.sh`
 
 
 # Details of Annotation Guidelines
