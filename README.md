@@ -15,17 +15,17 @@ The dataset used in our paper is under `lyra_dataset` folder.
 | Transformer | 47.05 | 23 | 4 | 1.5 | 
 | CodeBERT | 56.72 | 51 | 8.5 | 4.5 | 
 | GraphCodeBERT | 58.61  | 46 | 12.5 | 6 |
-| GPT | 67.29 | 88 | 24.5 | 21.5 | 
-| CodeGPT | 65.96 | 93 | 23.5 | 21 | 
-| CodeGPT-Adapted | 66.5 |  92 | 29 | 25.5 | 
+| GPT | **67.29** | 88 | 24.5 | 21.5 | 
+| CodeGPT | 65.96 | **93** | 23.5 | 21 | 
+| CodeGPT-Adapted | 66.5 |  92 | **29** | **25.5** | 
 
 ## Chinese Comments
 | Model | BLEU | Code Executable | AST Matching in Base Language | AST Exact Matching |
 | :---: | :---:        | :---:   | :---:        | :---:      |
 | Transformer | 45.84 | 21.5 | 3 | 0.5 | 
 | GPT | 66 | 92 | 22 | 20.5 | 
-| CodeGPT | 64.88 | 91 | 26 | 24 | 
-| CodeGPT-Adapted |66.37 | 96 | 24.5 | 23 | 
+| CodeGPT | 64.88 | 91 | **26** | **24** | 
+| CodeGPT-Adapted |**66.37** | **96** | 24.5 | 23 | 
 
 # Traing and Testing of Baseline
 
